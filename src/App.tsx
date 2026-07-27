@@ -10,20 +10,33 @@ import ReservasPage from "./pages/ReservasPage";
 import PerfilPage from "./pages/PerfilPage";
 import OwnerLayout from "./layouts/OwnerLayout";
 import { auth } from "./api/client";
-import type { LoginResponse } from "./api/auth";
+import type { LoginResponse, UserRole } from "./api/auth";
 
-type UserType = LoginResponse["tipo"];
-
-function getUserType(): UserType | null {
+function getUserType(): UserRole | null {
   return auth.getUser<LoginResponse>()?.tipo ?? null;
 }
 
-function RequireDueno({ children }: { children: React.ReactNode }) {
+/**
+ * Guard genérico: exige sesión y, opcionalmente, que el rol esté en la lista.
+ */
+function RequireRole({
+  roles,
+  children,
+}: {
+  roles: UserRole[];
+  children: React.ReactNode;
+}) {
   const token = auth.getToken();
   const tipo = getUserType();
-  if (!token || tipo !== "DUENO") return <Navigate to="/login" replace />;
+  if (!token || !tipo || !roles.includes(tipo)) {
+    return <Navigate to="/login" replace />;
+  }
   return <>{children}</>;
 }
+
+const RequireDueno = ({ children }: { children: React.ReactNode }) => (
+  <RequireRole roles={["DUENO"]}>{children}</RequireRole>
+);
 
 export default function App() {
   return (
