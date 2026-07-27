@@ -109,7 +109,7 @@ export default function MesasPage() {
   if (!data)
     return (
       <div className="text-stone-500 flex items-center gap-2">
-        <span className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+        <span className="w-4 h-4 border-2 border-forest-600 border-t-transparent rounded-full animate-spin" />
         Cargando...
       </div>
     );
@@ -136,7 +136,7 @@ export default function MesasPage() {
 
       {/* Formulario crear/editar */}
       {showForm && (
-        <div className="card p-5 mb-4 border-orange-200 bg-orange-50/30">
+        <div className="card p-5 mb-4 border-cream-300 bg-cream-100/40">
           <h3 className="font-semibold text-stone-900 mb-3">
             {editing ? 'Editar mesa' : 'Nueva mesa'}
           </h3>
@@ -205,7 +205,7 @@ export default function MesasPage() {
       )}
 
       {data.length === 0 && !showForm ? (
-        <div className="card p-8 text-center bg-orange-50/50 border-dashed">
+        <div className="card p-8 text-center bg-cream-100/70 border-dashed">
           <div className="text-4xl mb-2">🪑</div>
           <p className="text-stone-700 font-medium">Sin mesas cargadas</p>
           <p className="text-xs text-stone-500 mt-1">
@@ -225,7 +225,7 @@ export default function MesasPage() {
               }`}
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center text-xl">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cream-100 to-cream-200 flex items-center justify-center text-xl">
                   🍽️
                 </div>
                 <div className="flex items-center gap-1">
