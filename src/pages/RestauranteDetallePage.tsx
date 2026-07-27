@@ -5,6 +5,7 @@ const tabs = [
   { to: '', label: 'Info', icon: '📋' },
   { to: 'horarios', label: 'Horarios', icon: '🕐' },
   { to: 'mesas', label: 'Mesas', icon: '🪑' },
+  { to: 'reservas', label: 'Reservas', icon: '📅' },
 ];
 
 export default function RestauranteDetallePage() {

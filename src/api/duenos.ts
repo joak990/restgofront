@@ -29,6 +29,35 @@ export interface Mesa {
   activo: boolean;
 }
 
+export type EstadoReserva =
+  | 'PENDIENTE'
+  | 'CONFIRMADA'
+  | 'CANCELADA'
+  | 'NO_ASISTIO'
+  | 'COMPLETADA';
+
+export interface Reserva {
+  id: string;
+  restauranteId: string;
+  mesaId: string | null;
+  mesaNombre: string | null;
+  fechaReserva: string;
+  horaReserva: string;
+  cantidadPersonas: number;
+  estado: EstadoReserva | string;
+  nombreCliente: string | null;
+  telefonoCliente: string | null;
+  creadaEn: string;
+  confirmadaEn: string | null;
+  canceladaEn: string | null;
+  cliente: {
+    id: string;
+    nombreCompleto: string;
+    correo: string;
+    telefono: string | null;
+  } | null;
+}
+
 export const duenosApi = {
   // Restaurantes del dueño autenticado
   async getMisRestaurantes(): Promise<Restaurante[]> {
@@ -108,5 +137,36 @@ export const duenosApi = {
   },
   async deleteMesa(restauranteId: string, mesaId: string): Promise<void> {
     await apiClient.delete(`/duenos/restaurantes/${restauranteId}/mesas/${mesaId}`);
+  },
+
+  // Reservas
+  async getReservas(
+    restauranteId: string,
+    filtros?: { desde?: string; hasta?: string; estado?: string },
+  ): Promise<Reserva[]> {
+    const { data } = await apiClient.get<Reserva[]>(
+      `/duenos/restaurantes/${restauranteId}/reservas`,
+      { params: filtros },
+    );
+    return data;
+  },
+
+  async getReserva(restauranteId: string, reservaId: string): Promise<Reserva> {
+    const { data } = await apiClient.get<Reserva>(
+      `/duenos/restaurantes/${restauranteId}/reservas/${reservaId}`,
+    );
+    return data;
+  },
+
+  async actualizarEstadoReserva(
+    restauranteId: string,
+    reservaId: string,
+    estado: 'CONFIRMADA' | 'CANCELADA' | 'NO_ASISTIO' | 'COMPLETADA',
+  ): Promise<Reserva> {
+    const { data } = await apiClient.patch<Reserva>(
+      `/duenos/restaurantes/${restauranteId}/reservas/${reservaId}`,
+      { estado },
+    );
+    return data;
   },
 };

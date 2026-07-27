@@ -5,6 +5,7 @@ import MisRestaurantesPage from './pages/MisRestaurantesPage';
 import RestauranteDetallePage from './pages/RestauranteDetallePage';
 import HorariosPage from './pages/HorariosPage';
 import MesasPage from './pages/MesasPage';
+import ReservasPage from './pages/ReservasPage';
 import OwnerLayout from './layouts/OwnerLayout';
 import { auth } from './api/client';
 import type { LoginResponse } from './api/auth';
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="restaurantes/:id" element={<RestauranteDetallePage />} />
         <Route path="restaurantes/:id/horarios" element={<HorariosPage />} />
         <Route path="restaurantes/:id/mesas" element={<MesasPage />} />
+        <Route path="restaurantes/:id/reservas" element={<ReservasPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/login" replace />} />
