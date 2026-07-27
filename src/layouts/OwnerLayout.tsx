@@ -6,8 +6,8 @@ export default function OwnerLayout() {
   const navigate = useNavigate();
   const user = authApi.currentUser();
 
-  const handleLogout = () => {
-    authApi.logout();
+  const handleLogout = async () => {
+    await authApi.logout();
     navigate("/login");
   };
 
