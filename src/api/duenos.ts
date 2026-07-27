@@ -133,6 +133,48 @@ export interface CreateRestauranteBody {
 
 export interface UpdateRestauranteBody extends Partial<CreateRestauranteBody> {}
 
+export interface PerfilRestaurante {
+  id: string;
+  nombre: string;
+  nivelSuscripcion: string;
+  estadoSuscripcion: string;
+  suscripcionFin: string | null;
+  activo: boolean;
+  verificado: boolean;
+  _count: { mesas: number; platos: number };
+}
+
+export interface PerfilResponse {
+  id: string;
+  correo: string;
+  nombreCompleto: string;
+  dni: string;
+  cuitCuil: string | null;
+  telefono: string;
+  direccion: string;
+  provinciaId: string;
+  ciudadId: string;
+  codigoPostal: string | null;
+  fechaNacimiento: string | null;
+  urlAvatar: string | null;
+  estadoVerificacion: string;
+  provincia: { id: string; nombre: string } | null;
+  ciudad: { id: string; nombre: string } | null;
+  restaurantes: PerfilRestaurante[];
+  totalRestaurantes: number;
+  totalMesas: number;
+}
+
+export interface ActualizarPerfilBody {
+  nombreCompleto?: string;
+  telefono?: string;
+  direccion?: string;
+  provinciaId?: string;
+  ciudadId?: string;
+  codigoPostal?: string;
+  urlAvatar?: string;
+}
+
 export const duenosApi = {
   // Restaurantes del dueño autenticado
   async getMisRestaurantes(): Promise<Restaurante[]> {
@@ -309,6 +351,20 @@ export const duenosApi = {
   ): Promise<Reserva> {
     const { data } = await apiClient.post<Reserva>(
       `/duenos/restaurantes/${restauranteId}/reservas`,
+      body,
+    );
+    return data;
+  },
+
+  // Perfil del dueño
+  async getPerfil(): Promise<PerfilResponse> {
+    const { data } = await apiClient.get<PerfilResponse>("/duenos/perfil");
+    return data;
+  },
+
+  async actualizarPerfil(body: ActualizarPerfilBody): Promise<PerfilResponse> {
+    const { data } = await apiClient.patch<PerfilResponse>(
+      "/duenos/perfil",
       body,
     );
     return data;

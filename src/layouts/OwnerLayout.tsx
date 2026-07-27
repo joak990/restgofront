@@ -1,6 +1,6 @@
 // filepath: src/layouts/OwnerLayout.tsx
-import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { authApi } from '../api/auth';
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { authApi } from "../api/auth";
 
 export default function OwnerLayout() {
   const navigate = useNavigate();
@@ -8,7 +8,7 @@ export default function OwnerLayout() {
 
   const handleLogout = () => {
     authApi.logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -20,20 +20,32 @@ export default function OwnerLayout() {
               <span className="text-lg">🍽️</span>
             </span>
             <div>
-              <h1 className="font-bold text-stone-900 leading-tight">RestaurantGo</h1>
-              <p className="text-xs text-stone-500 leading-tight">Panel de dueños</p>
+              <h1 className="font-bold text-stone-900 leading-tight">
+                RestaurantGo
+              </h1>
+              <p className="text-xs text-stone-500 leading-tight">
+                Panel de dueños
+              </p>
             </div>
           </Link>
           <div className="flex items-center gap-3 text-sm">
-            {user && (
+            <Link
+              to="/dueno/perfil"
+              className="flex items-center gap-2 hover:opacity-80 transition"
+              title="Mi perfil"
+            >
               <div className="hidden sm:flex flex-col items-end">
-                <span className="font-medium text-stone-800">{user.nombreCompleto}</span>
-                <span className="text-xs text-stone-500">{user.tipo}</span>
+                <span className="font-medium text-stone-800">
+                  {user?.nombreCompleto ?? ""}
+                </span>
+                <span className="text-xs text-stone-500">
+                  {user?.tipo ?? ""}
+                </span>
               </div>
-            )}
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-forest-500 to-forest-700 flex items-center justify-center text-cream-50 font-medium shadow-sm">
-              {user?.nombreCompleto?.charAt(0).toUpperCase() ?? '?'}
-            </div>
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-forest-500 to-forest-700 flex items-center justify-center text-cream-50 font-medium shadow-sm">
+                {user?.nombreCompleto?.charAt(0).toUpperCase() ?? "?"}
+              </div>
+            </Link>
             <button
               onClick={handleLogout}
               className="btn-ghost text-sm py-1.5 px-3"

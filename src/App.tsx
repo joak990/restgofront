@@ -1,17 +1,18 @@
 // filepath: src/App.tsx
-import { Navigate, Route, Routes } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import MisRestaurantesPage from './pages/MisRestaurantesPage';
-import RestauranteDetallePage from './pages/RestauranteDetallePage';
-import RestauranteInfoPage from './components/RestauranteInfoPage';
-import HorariosPage from './pages/HorariosPage';
-import MesasPage from './pages/MesasPage';
-import ReservasPage from './pages/ReservasPage';
-import OwnerLayout from './layouts/OwnerLayout';
-import { auth } from './api/client';
-import type { LoginResponse } from './api/auth';
+import { Navigate, Route, Routes } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import MisRestaurantesPage from "./pages/MisRestaurantesPage";
+import RestauranteDetallePage from "./pages/RestauranteDetallePage";
+import RestauranteInfoPage from "./components/RestauranteInfoPage";
+import HorariosPage from "./pages/HorariosPage";
+import MesasPage from "./pages/MesasPage";
+import ReservasPage from "./pages/ReservasPage";
+import PerfilPage from "./pages/PerfilPage";
+import OwnerLayout from "./layouts/OwnerLayout";
+import { auth } from "./api/client";
+import type { LoginResponse } from "./api/auth";
 
-type UserType = LoginResponse['tipo'];
+type UserType = LoginResponse["tipo"];
 
 function getUserType(): UserType | null {
   return auth.getUser<LoginResponse>()?.tipo ?? null;
@@ -20,7 +21,7 @@ function getUserType(): UserType | null {
 function RequireDueno({ children }: { children: React.ReactNode }) {
   const token = auth.getToken();
   const tipo = getUserType();
-  if (!token || tipo !== 'DUENO') return <Navigate to="/login" replace />;
+  if (!token || tipo !== "DUENO") return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 
@@ -38,6 +39,7 @@ export default function App() {
         }
       >
         <Route index element={<MisRestaurantesPage />} />
+        <Route path="perfil" element={<PerfilPage />} />
         <Route path="restaurantes/:id" element={<RestauranteDetallePage />}>
           <Route index element={<RestauranteInfoPage />} />
         </Route>
