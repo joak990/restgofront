@@ -5,11 +5,21 @@ export interface Restaurante {
   id: string;
   nombre: string;
   descripcion?: string | null;
+  tipoCocina?: string | null;
   direccion: string;
-  telefono: string;
+  telefono?: string | null;
+  correo?: string | null;
+  urlInstagram?: string | null;
+  urlImagenPortada?: string | null;
+  urlLogo?: string | null;
+  rangoPrecio: number;
   activo: boolean;
   verificado: boolean;
-  // ...otros campos según response del backend
+  provinciaId: string;
+  ciudadId: string;
+  ciudad?: { nombre: string } | null;
+  provincia?: { nombre: string } | null;
+  _count?: { platos: number; mesas: number };
 }
 
 export interface Horario {
@@ -24,7 +34,7 @@ export interface Horario {
 export interface Mesa {
   id: string;
   restauranteId: string;
-  numero: number;
+  nombre: string | null;
   capacidad: number;
   activo: boolean;
 }
@@ -58,10 +68,103 @@ export interface Reserva {
   } | null;
 }
 
+export interface Provincia {
+  id: string;
+  nombre: string;
+  codigoIgn: string;
+}
+
+export interface Ciudad {
+  id: string;
+  nombre: string;
+  provinciaId: string;
+}
+
+export interface CalendarioSlot {
+  hora: string;
+  bloque: number;
+  mesasDisponibles: number;
+  totalMesas: number;
+}
+
+export interface CalendarioReserva {
+  id: string;
+  horaReserva: string;
+  horaFin: string;
+  cantidadPersonas: number;
+  estado: string;
+  nombreCliente: string | null;
+  telefonoCliente: string | null;
+  mesa: { id: string; nombre: string | null } | null;
+  cliente: {
+    id: string;
+    nombreCompleto: string;
+    correo: string;
+    telefono: string | null;
+  } | null;
+}
+
+export interface CalendarioResponse {
+  fecha: string;
+  diaSemana: number;
+  horarios: { id: string; horaApertura: string; horaCierre: string; cerrado: boolean }[];
+  slots: CalendarioSlot[];
+  reservas: CalendarioReserva[];
+}
+
+export interface CreateRestauranteBody {
+  nombre: string;
+  descripcion?: string;
+  tipoCocina?: string;
+  direccion: string;
+  provinciaId: string;
+  ciudadId: string;
+  codigoPostal?: string;
+  latitud?: number;
+  longitud?: number;
+  telefono?: string;
+  correo?: string;
+  urlInstagram?: string;
+  urlImagenPortada?: string;
+  urlLogo?: string;
+  rangoPrecio?: number;
+}
+
+export interface UpdateRestauranteBody extends Partial<CreateRestauranteBody> {}
+
 export const duenosApi = {
   // Restaurantes del dueño autenticado
   async getMisRestaurantes(): Promise<Restaurante[]> {
     const { data } = await apiClient.get<Restaurante[]>('/duenos/restaurantes');
+    return data;
+  },
+
+  async createRestaurante(body: CreateRestauranteBody): Promise<Restaurante> {
+    const { data } = await apiClient.post<Restaurante>('/duenos/restaurantes', body);
+    return data;
+  },
+
+  async updateRestaurante(
+    restauranteId: string,
+    body: UpdateRestauranteBody,
+  ): Promise<Restaurante> {
+    const { data } = await apiClient.patch<Restaurante>(
+      `/duenos/restaurantes/${restauranteId}`,
+      body,
+    );
+    return data;
+  },
+
+  // Ubicaciones
+  async getProvincias(): Promise<Provincia[]> {
+    const { data } = await apiClient.get<Provincia[]>('/ubicaciones/provincias');
+    return data;
+  },
+
+  async getCiudades(provinciaId: string): Promise<Ciudad[]> {
+    const { data } = await apiClient.get<Ciudad[]>(
+      `/ubicaciones/provincias/${provinciaId}/ciudades`,
+    );
     return data;
   },
 
@@ -116,7 +219,7 @@ export const duenosApi = {
   },
   async createMesa(
     restauranteId: string,
-    body: Omit<Mesa, 'id' | 'restauranteId'>,
+    body: { nombre?: string; capacidad: number },
   ): Promise<Mesa> {
     const { data } = await apiClient.post<Mesa>(
       `/duenos/restaurantes/${restauranteId}/mesas`,
@@ -127,7 +230,7 @@ export const duenosApi = {
   async updateMesa(
     restauranteId: string,
     mesaId: string,
-    body: Partial<Omit<Mesa, 'id' | 'restauranteId'>>,
+    body: { nombre?: string; capacidad?: number; activo?: boolean },
   ): Promise<Mesa> {
     const { data } = await apiClient.patch<Mesa>(
       `/duenos/restaurantes/${restauranteId}/mesas/${mesaId}`,
@@ -137,6 +240,15 @@ export const duenosApi = {
   },
   async deleteMesa(restauranteId: string, mesaId: string): Promise<void> {
     await apiClient.delete(`/duenos/restaurantes/${restauranteId}/mesas/${mesaId}`);
+  },
+
+  // Calendario
+  async getCalendario(restauranteId: string, fecha: string): Promise<CalendarioResponse> {
+    const { data } = await apiClient.get<CalendarioResponse>(
+      `/duenos/restaurantes/${restauranteId}/calendario`,
+      { params: { fecha } },
+    );
+    return data;
   },
 
   // Reservas

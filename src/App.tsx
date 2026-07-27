@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import MisRestaurantesPage from './pages/MisRestaurantesPage';
 import RestauranteDetallePage from './pages/RestauranteDetallePage';
+import RestauranteInfoPage from './components/RestauranteInfoPage';
 import HorariosPage from './pages/HorariosPage';
 import MesasPage from './pages/MesasPage';
 import ReservasPage from './pages/ReservasPage';
@@ -37,7 +38,9 @@ export default function App() {
         }
       >
         <Route index element={<MisRestaurantesPage />} />
-        <Route path="restaurantes/:id" element={<RestauranteDetallePage />} />
+        <Route path="restaurantes/:id" element={<RestauranteDetallePage />}>
+          <Route index element={<RestauranteInfoPage />} />
+        </Route>
         <Route path="restaurantes/:id/horarios" element={<HorariosPage />} />
         <Route path="restaurantes/:id/mesas" element={<MesasPage />} />
         <Route path="restaurantes/:id/reservas" element={<ReservasPage />} />
