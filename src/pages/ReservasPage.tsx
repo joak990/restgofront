@@ -1,6 +1,6 @@
 // filepath: src/pages/ReservasPage.tsx
-import { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import {
   duenosApi,
   type Reserva,
@@ -8,54 +8,67 @@ import {
   type CalendarioResponse,
   type CalendarioReserva,
   type CalendarioSlot,
-} from '../api/duenos';
+  type Mesa,
+} from "../api/duenos";
 
-const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-const ESTADOS: { value: EstadoReserva | ''; label: string }[] = [
-  { value: '', label: 'Todas' },
-  { value: 'PENDIENTE', label: 'Pendientes' },
-  { value: 'CONFIRMADA', label: 'Confirmadas' },
-  { value: 'CANCELADA', label: 'Canceladas' },
-  { value: 'NO_ASISTIO', label: 'No asistió' },
-  { value: 'COMPLETADA', label: 'Completadas' },
+const DIAS = [
+  "Domingo",
+  "Lunes",
+  "Martes",
+  "Miércoles",
+  "Jueves",
+  "Viernes",
+  "Sábado",
+];
+const ESTADOS: { value: EstadoReserva | ""; label: string }[] = [
+  { value: "", label: "Todas" },
+  { value: "PENDIENTE", label: "Pendientes" },
+  { value: "CONFIRMADA", label: "Confirmadas" },
+  { value: "CANCELADA", label: "Canceladas" },
+  { value: "NO_ASISTIO", label: "No asistió" },
+  { value: "COMPLETADA", label: "Completadas" },
 ];
 
 function formatearFecha(fecha: string): string {
-  const [anio, mes, dia] = fecha.split('-');
+  const [anio, mes, dia] = fecha.split("-");
   return `${dia}/${mes}/${anio}`;
 }
 
 function EstadoBadge({ estado }: { estado: string }) {
   const clases: Record<string, string> = {
-    CONFIRMADA: 'pill-green',
-    PENDIENTE: 'pill-yellow',
-    CANCELADA: 'pill-gray',
-    NO_ASISTIO: 'pill-red',
-    COMPLETADA: 'pill-blue',
+    CONFIRMADA: "pill-green",
+    PENDIENTE: "pill-yellow",
+    CANCELADA: "pill-gray",
+    NO_ASISTIO: "pill-red",
+    COMPLETADA: "pill-blue",
   };
   const etiquetas: Record<string, string> = {
-    CONFIRMADA: '✓ Confirmada',
-    PENDIENTE: '⏳ Pendiente',
-    CANCELADA: '✕ Cancelada',
-    NO_ASISTIO: '✕ No asistió',
-    COMPLETADA: '✓ Completada',
+    CONFIRMADA: "✓ Confirmada",
+    PENDIENTE: "⏳ Pendiente",
+    CANCELADA: "✕ Cancelada",
+    NO_ASISTIO: "✕ No asistió",
+    COMPLETADA: "✓ Completada",
   };
   return (
-    <span className={clases[estado] ?? 'pill-gray'}>{etiquetas[estado] ?? estado}</span>
+    <span className={clases[estado] ?? "pill-gray"}>
+      {etiquetas[estado] ?? estado}
+    </span>
   );
 }
 
 function slotColor(slot: CalendarioSlot): string {
-  if (slot.mesasDisponibles === slot.totalMesas) return 'bg-emerald-100 border-emerald-300 text-emerald-800';
-  if (slot.mesasDisponibles === 0) return 'bg-red-100 border-red-300 text-red-800';
-  return 'bg-amber-100 border-amber-300 text-amber-800';
+  if (slot.mesasDisponibles === slot.totalMesas)
+    return "bg-emerald-100 border-emerald-300 text-emerald-800";
+  if (slot.mesasDisponibles === 0)
+    return "bg-red-100 border-red-300 text-red-800";
+  return "bg-amber-100 border-amber-300 text-amber-800";
 }
 
 export default function ReservasPage() {
   const { id: restauranteId } = useParams<{ id: string }>();
 
   // Vista: calendario o tabla
-  const [vista, setVista] = useState<'calendario' | 'tabla'>('calendario');
+  const [vista, setVista] = useState<"calendario" | "tabla">("calendario");
 
   // Estado del calendario
   const [fechaCalendario, setFechaCalendario] = useState(() =>
@@ -66,13 +79,24 @@ export default function ReservasPage() {
   const [calendarioError, setCalendarioError] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<CalendarioSlot | null>(null);
 
+  // Modal nueva reserva
+  const [showNuevaReserva, setShowNuevaReserva] = useState(false);
+  const [nuevaReservaHora, setNuevaReservaHora] = useState("");
+  const [nuevaReservaPersonas, setNuevaReservaPersonas] = useState(2);
+  const [nuevaReservaNombre, setNuevaReservaNombre] = useState("");
+  const [nuevaReservaTelefono, setNuevaReservaTelefono] = useState("");
+  const [nuevaReservaMesaId, setNuevaReservaMesaId] = useState("");
+  const [nuevaReservaNotas, setNuevaReservaNotas] = useState("");
+  const [nuevaReservaSaving, setNuevaReservaSaving] = useState(false);
+  const [mesas, setMesas] = useState<Mesa[]>([]);
+
   // Estado de la tabla (reservas con filtros)
   const [reservas, setReservas] = useState<Reserva[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
-  const [filtroEstado, setFiltroEstado] = useState<EstadoReserva | ''>('');
-  const [filtroDesde, setFiltroDesde] = useState<string>('');
-  const [filtroHasta, setFiltroHasta] = useState<string>('');
+  const [filtroEstado, setFiltroEstado] = useState<EstadoReserva | "">("");
+  const [filtroDesde, setFiltroDesde] = useState<string>("");
+  const [filtroHasta, setFiltroHasta] = useState<string>("");
 
   // Cargar calendario
   const cargarCalendario = useCallback(async () => {
@@ -81,7 +105,10 @@ export default function ReservasPage() {
     setCalendarioError(null);
     setSelectedSlot(null);
     try {
-      const data = await duenosApi.getCalendario(restauranteId, fechaCalendario);
+      const data = await duenosApi.getCalendario(
+        restauranteId,
+        fechaCalendario,
+      );
       setCalendario(data);
     } catch (e) {
       setCalendarioError((e as Error).message);
@@ -120,44 +147,88 @@ export default function ReservasPage() {
 
   async function cambiarEstado(
     reservaId: string,
-    nuevoEstado: 'CONFIRMADA' | 'CANCELADA' | 'NO_ASISTIO' | 'COMPLETADA',
+    nuevoEstado: "CONFIRMADA" | "CANCELADA" | "NO_ASISTIO" | "COMPLETADA",
   ) {
     if (!restauranteId) return;
     const mensajes: Record<string, string> = {
-      CONFIRMADA: '¿Confirmar esta reserva?',
-      CANCELADA: '¿Cancelar esta reserva?',
-      NO_ASISTIO: '¿Marcar como no asistió?',
-      COMPLETADA: '¿Marcar como completada?',
+      CONFIRMADA: "¿Confirmar esta reserva?",
+      CANCELADA: "¿Cancelar esta reserva?",
+      NO_ASISTIO: "¿Marcar como no asistió?",
+      COMPLETADA: "¿Marcar como completada?",
     };
     if (!confirm(mensajes[nuevoEstado])) return;
     try {
-      await duenosApi.actualizarEstadoReserva(restauranteId, reservaId, nuevoEstado);
+      await duenosApi.actualizarEstadoReserva(
+        restauranteId,
+        reservaId,
+        nuevoEstado,
+      );
       await cargarCalendario();
-      if (vista === 'tabla') await cargarReservas();
+      if (vista === "tabla") await cargarReservas();
     } catch (e) {
       alert((e as Error).message);
     }
   }
 
   function limpiarFiltros() {
-    setFiltroEstado('');
-    setFiltroDesde('');
-    setFiltroHasta('');
+    setFiltroEstado("");
+    setFiltroDesde("");
+    setFiltroHasta("");
     setTimeout(cargarReservas, 0);
   }
 
   function navegarFecha(offset: number) {
-    const d = new Date(fechaCalendario + 'T00:00:00');
+    const d = new Date(fechaCalendario + "T00:00:00");
     d.setDate(d.getDate() + offset);
     setFechaCalendario(d.toISOString().slice(0, 10));
+  }
+
+  async function abrirNuevaReserva(horaPreseleccionada?: string) {
+    if (!restauranteId) return;
+    try {
+      const m = await duenosApi.getMesas(restauranteId);
+      setMesas(m.filter((mesa) => mesa.activo));
+    } catch {
+      setMesas([]);
+    }
+    setNuevaReservaHora(horaPreseleccionada ?? "");
+    setNuevaReservaPersonas(2);
+    setNuevaReservaNombre("");
+    setNuevaReservaTelefono("");
+    setNuevaReservaMesaId("");
+    setNuevaReservaNotas("");
+    setShowNuevaReserva(true);
+  }
+
+  async function crearReservaManual(e: React.FormEvent) {
+    e.preventDefault();
+    if (!restauranteId || !nuevaReservaHora) return;
+    setNuevaReservaSaving(true);
+    try {
+      await duenosApi.crearReservaDueno(restauranteId, {
+        fecha: fechaCalendario,
+        hora: nuevaReservaHora,
+        cantidadPersonas: nuevaReservaPersonas,
+        nombreCliente: nuevaReservaNombre || undefined,
+        telefonoCliente: nuevaReservaTelefono || undefined,
+        mesaId: nuevaReservaMesaId || undefined,
+        pedidosEspeciales: nuevaReservaNotas || undefined,
+      });
+      setShowNuevaReserva(false);
+      await cargarCalendario();
+    } catch (err) {
+      alert((err as Error).message);
+    } finally {
+      setNuevaReservaSaving(false);
+    }
   }
 
   // Reservas que se solapan con un slot seleccionado
   function reservasDelSlot(slot: CalendarioSlot): CalendarioReserva[] {
     if (!calendario) return [];
     return calendario.reservas.filter((r) => {
-      const [rh, rm] = r.horaReserva.split(':').map(Number);
-      const [sh, sm] = slot.hora.split(':').map(Number);
+      const [rh, rm] = r.horaReserva.split(":").map(Number);
+      const [sh, sm] = slot.hora.split(":").map(Number);
       const rMin = rh * 60 + rm;
       const sMin = sh * 60 + sm;
       return !(rMin + 90 <= sMin || rMin >= sMin + 90);
@@ -172,10 +243,14 @@ export default function ReservasPage() {
       if (!map.has(s.bloque)) map.set(s.bloque, []);
       map.get(s.bloque)!.push(s);
     }
-    return Array.from(map.entries()).map(([bloque, slots]) => ({ bloque, slots }));
+    return Array.from(map.entries()).map(([bloque, slots]) => ({
+      bloque,
+      slots,
+    }));
   }
 
-  const totalPersonas = calendario?.reservas.reduce((acc, r) => acc + r.cantidadPersonas, 0) ?? 0;
+  const totalPersonas =
+    calendario?.reservas.reduce((acc, r) => acc + r.cantidadPersonas, 0) ?? 0;
 
   return (
     <div>
@@ -185,33 +260,42 @@ export default function ReservasPage() {
           <span>📅</span> Reservas
         </h2>
 
-        {/* Toggle calendario / tabla */}
-        <div className="flex items-center gap-2 bg-stone-100 rounded-lg p-0.5">
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => setVista('calendario')}
-            className={`px-3 py-1.5 text-sm rounded-md font-medium transition ${
-              vista === 'calendario'
-                ? 'bg-white shadow-sm text-forest-700'
-                : 'text-stone-600 hover:text-stone-800'
-            }`}
+            onClick={() => abrirNuevaReserva()}
+            className="btn-primary text-sm flex items-center gap-1.5"
           >
-            📅 Calendario
+            <span className="text-base leading-none">+</span> Nueva reserva
           </button>
-          <button
-            onClick={() => setVista('tabla')}
-            className={`px-3 py-1.5 text-sm rounded-md font-medium transition ${
-              vista === 'tabla'
-                ? 'bg-white shadow-sm text-forest-700'
-                : 'text-stone-600 hover:text-stone-800'
-            }`}
-          >
-            📋 Tabla
-          </button>
+
+          {/* Toggle calendario / tabla */}
+          <div className="flex items-center gap-2 bg-stone-100 rounded-lg p-0.5">
+            <button
+              onClick={() => setVista("calendario")}
+              className={`px-3 py-1.5 text-sm rounded-md font-medium transition ${
+                vista === "calendario"
+                  ? "bg-white shadow-sm text-forest-700"
+                  : "text-stone-600 hover:text-stone-800"
+              }`}
+            >
+              📅 Calendario
+            </button>
+            <button
+              onClick={() => setVista("tabla")}
+              className={`px-3 py-1.5 text-sm rounded-md font-medium transition ${
+                vista === "tabla"
+                  ? "bg-white shadow-sm text-forest-700"
+                  : "text-stone-600 hover:text-stone-800"
+              }`}
+            >
+              📋 Tabla
+            </button>
+          </div>
         </div>
       </div>
 
       {/* === VISTA CALENDARIO === */}
-      {vista === 'calendario' && (
+      {vista === "calendario" && (
         <>
           {/* Selector de fecha */}
           <div className="card p-4 mb-4">
@@ -236,7 +320,9 @@ export default function ReservasPage() {
                   ▶
                 </button>
                 <button
-                  onClick={() => setFechaCalendario(new Date().toISOString().slice(0, 10))}
+                  onClick={() =>
+                    setFechaCalendario(new Date().toISOString().slice(0, 10))
+                  }
                   className="btn-ghost text-sm"
                 >
                   Hoy
@@ -246,14 +332,18 @@ export default function ReservasPage() {
               {calendario && (
                 <div className="flex items-center gap-4 text-sm text-stone-500">
                   <span>
-                    {DIAS[calendario.diaSemana]} {formatearFecha(calendario.fecha)}
+                    {DIAS[calendario.diaSemana]}{" "}
+                    {formatearFecha(calendario.fecha)}
                   </span>
                   <span>
-                    <strong className="text-stone-700">{calendario.reservas.length}</strong>{' '}
+                    <strong className="text-stone-700">
+                      {calendario.reservas.length}
+                    </strong>{" "}
                     reservas
                   </span>
                   <span>
-                    <strong className="text-stone-700">{totalPersonas}</strong> personas
+                    <strong className="text-stone-700">{totalPersonas}</strong>{" "}
+                    personas
                   </span>
                 </div>
               )}
@@ -274,17 +364,19 @@ export default function ReservasPage() {
           )}
 
           {/* Calendario vacío / sin horarios */}
-          {calendario && !calendarioLoading && calendario.horarios.length === 0 && (
-            <div className="card p-8 text-center bg-cream-100/70 border-dashed mb-4">
-              <div className="text-4xl mb-2">🔕</div>
-              <p className="text-stone-700 font-medium">
-                Sin horarios configurados para este día
-              </p>
-              <p className="text-xs text-stone-500 mt-1">
-                El restaurante no abre los {DIAS[calendario.diaSemana]}s.
-              </p>
-            </div>
-          )}
+          {calendario &&
+            !calendarioLoading &&
+            calendario.horarios.length === 0 && (
+              <div className="card p-8 text-center bg-cream-100/70 border-dashed mb-4">
+                <div className="text-4xl mb-2">🔕</div>
+                <p className="text-stone-700 font-medium">
+                  Sin horarios configurados para este día
+                </p>
+                <p className="text-xs text-stone-500 mt-1">
+                  El restaurante no abre los {DIAS[calendario.diaSemana]}s.
+                </p>
+              </div>
+            )}
 
           {/* Slots del calendario por bloque */}
           {calendario &&
@@ -298,13 +390,17 @@ export default function ReservasPage() {
                       🕐 {horario?.horaApertura} — {horario?.horaCierre}
                     </span>
                     {calendario.horarios.length > 1 && (
-                      <span className="pill-gray text-xs">Bloque {bloque + 1}</span>
+                      <span className="pill-gray text-xs">
+                        Bloque {bloque + 1}
+                      </span>
                     )}
                   </div>
 
                   <div className="grid gap-2 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
                     {slots.map((slot) => {
-                      const isSelected = selectedSlot?.hora === slot.hora && selectedSlot?.bloque === slot.bloque;
+                      const isSelected =
+                        selectedSlot?.hora === slot.hora &&
+                        selectedSlot?.bloque === slot.bloque;
                       const reservasSlot = reservasDelSlot(slot);
                       return (
                         <button
@@ -312,10 +408,12 @@ export default function ReservasPage() {
                           onClick={() =>
                             setSelectedSlot(isSelected ? null : slot)
                           }
-                          className={`relative p-2 rounded-lg border text-center transition hover:shadow-sm ${slotColor(slot)} ${isSelected ? 'ring-2 ring-forest-600 shadow-md' : ''}`}
+                          className={`relative p-2 rounded-lg border text-center transition hover:shadow-sm ${slotColor(slot)} ${isSelected ? "ring-2 ring-forest-600 shadow-md" : ""}`}
                           title={`${slot.hora}: ${slot.mesasDisponibles}/${slot.totalMesas} mesas libres`}
                         >
-                          <div className="text-sm font-bold font-mono">{slot.hora}</div>
+                          <div className="text-sm font-bold font-mono">
+                            {slot.hora}
+                          </div>
                           <div className="text-xs mt-0.5">
                             {slot.mesasDisponibles}/{slot.totalMesas}
                           </div>
@@ -335,7 +433,8 @@ export default function ReservasPage() {
                     <div className="card p-4 mt-3 border-cream-300 bg-cream-100/40">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="font-semibold text-stone-900">
-                          📍 Slot {selectedSlot.hora} — {selectedSlot.mesasDisponibles} de{' '}
+                          📍 Slot {selectedSlot.hora} —{" "}
+                          {selectedSlot.mesasDisponibles} de{" "}
                           {selectedSlot.totalMesas} mesas disponibles
                         </h3>
                         <button
@@ -347,14 +446,16 @@ export default function ReservasPage() {
                       </div>
 
                       {reservasDelSlot(selectedSlot).length === 0 ? (
-                        <p className="text-sm text-stone-500">
+                        <p className="text-sm text-stone-500 mb-2">
                           No hay reservas en este horario.
                         </p>
                       ) : (
                         <div className="space-y-2">
                           {reservasDelSlot(selectedSlot).map((r) => {
                             const nombre =
-                              r.cliente?.nombreCompleto ?? r.nombreCliente ?? 'Sin nombre';
+                              r.cliente?.nombreCompleto ??
+                              r.nombreCliente ??
+                              "Sin nombre";
                             const telefono =
                               r.cliente?.telefono ?? r.telefonoCliente ?? null;
                             return (
@@ -364,14 +465,22 @@ export default function ReservasPage() {
                               >
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="font-medium text-stone-800">{nombre}</span>
+                                    <span className="font-medium text-stone-800">
+                                      {nombre}
+                                    </span>
                                     <EstadoBadge estado={r.estado} />
                                   </div>
                                   <div className="flex items-center gap-3 text-xs text-stone-500 mt-1 flex-wrap">
-                                    <span>🕐 {r.horaReserva} — {r.horaFin}</span>
-                                    <span>👥 {r.cantidadPersonas} personas</span>
+                                    <span>
+                                      🕐 {r.horaReserva} — {r.horaFin}
+                                    </span>
+                                    <span>
+                                      👥 {r.cantidadPersonas} personas
+                                    </span>
                                     {r.mesa && (
-                                      <span>🪑 {r.mesa.nombre ?? 'Mesa sin nombre'}</span>
+                                      <span>
+                                        🪑 {r.mesa.nombre ?? "Mesa sin nombre"}
+                                      </span>
                                     )}
                                     {telefono && <span>📞 {telefono}</span>}
                                     {r.cliente && (
@@ -380,44 +489,68 @@ export default function ReservasPage() {
                                   </div>
                                 </div>
                                 <div className="flex gap-1 ml-2 flex-shrink-0">
-                                  {r.estado === 'PENDIENTE' && (
+                                  {r.estado === "PENDIENTE" && (
                                     <button
-                                      onClick={() => cambiarEstado(r.id, 'CONFIRMADA')}
+                                      onClick={() =>
+                                        cambiarEstado(r.id, "CONFIRMADA")
+                                      }
                                       className="text-xs px-2 py-1 rounded bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
                                     >
                                       Confirmar
                                     </button>
                                   )}
-                                  {(r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA') && (
+                                  {(r.estado === "PENDIENTE" ||
+                                    r.estado === "CONFIRMADA") && (
                                     <>
                                       <button
-                                        onClick={() => cambiarEstado(r.id, 'COMPLETADA')}
+                                        onClick={() =>
+                                          cambiarEstado(r.id, "COMPLETADA")
+                                        }
                                         className="text-xs px-2 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200"
                                       >
                                         Completar
                                       </button>
                                       <button
-                                        onClick={() => cambiarEstado(r.id, 'NO_ASISTIO')}
+                                        onClick={() =>
+                                          cambiarEstado(r.id, "NO_ASISTIO")
+                                        }
                                         className="text-xs px-2 py-1 rounded bg-red-50 text-red-700 hover:bg-red-100 border border-red-200"
                                       >
                                         No asistió
                                       </button>
                                       <button
-                                        onClick={() => cambiarEstado(r.id, 'CANCELADA')}
+                                        onClick={() =>
+                                          cambiarEstado(r.id, "CANCELADA")
+                                        }
                                         className="text-xs px-2 py-1 rounded bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200"
                                       >
                                         Cancelar
                                       </button>
                                     </>
                                   )}
-                                  {(r.estado === 'COMPLETADA' || r.estado === 'CANCELADA' || r.estado === 'NO_ASISTIO') && (
-                                    <span className="text-xs text-stone-400 px-1">—</span>
+                                  {(r.estado === "COMPLETADA" ||
+                                    r.estado === "CANCELADA" ||
+                                    r.estado === "NO_ASISTIO") && (
+                                    <span className="text-xs text-stone-400 px-1">
+                                      —
+                                    </span>
                                   )}
                                 </div>
                               </div>
                             );
                           })}
                         </div>
+                      )}
+
+                      {/* Botón para crear reserva desde el slot */}
+                      {selectedSlot.mesasDisponibles > 0 && (
+                        <button
+                          onClick={() => abrirNuevaReserva(selectedSlot.hora)}
+                          className="mt-3 text-sm px-3 py-1.5 rounded-lg bg-forest-600 text-cream-50 hover:bg-forest-700 font-medium flex items-center gap-1.5 transition"
+                        >
+                          <span className="text-base leading-none">+</span>{" "}
+                          Reservar aquí ({selectedSlot.hora})
+                        </button>
                       )}
                     </div>
                   )}
@@ -429,16 +562,22 @@ export default function ReservasPage() {
           {calendario && calendario.horarios.length > 0 && (
             <div className="flex items-center gap-4 text-xs text-stone-500 mt-2 flex-wrap">
               <span className="flex items-center gap-1">
-                <span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-300" /> Libre
+                <span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-300" />{" "}
+                Libre
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-3 h-3 rounded bg-amber-100 border border-amber-300" /> Parcial
+                <span className="w-3 h-3 rounded bg-amber-100 border border-amber-300" />{" "}
+                Parcial
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-3 h-3 rounded bg-red-100 border border-red-300" /> Completo
+                <span className="w-3 h-3 rounded bg-red-100 border border-red-300" />{" "}
+                Completo
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-4 h-4 rounded-full bg-forest-600 text-cream-50 text-[10px] flex items-center justify-center">1</span> Reserva activa
+                <span className="w-4 h-4 rounded-full bg-forest-600 text-cream-50 text-[10px] flex items-center justify-center">
+                  1
+                </span>{" "}
+                Reserva activa
               </span>
             </div>
           )}
@@ -446,13 +585,15 @@ export default function ReservasPage() {
       )}
 
       {/* === VISTA TABLA === */}
-      {vista === 'tabla' && (
+      {vista === "tabla" && (
         <>
           {/* Filtros */}
           <div className="card p-4 mb-4">
             <div className="grid gap-3 sm:grid-cols-4">
               <div>
-                <label className="block text-xs font-medium text-stone-600 mb-1">Desde</label>
+                <label className="block text-xs font-medium text-stone-600 mb-1">
+                  Desde
+                </label>
                 <input
                   type="date"
                   value={filtroDesde}
@@ -461,7 +602,9 @@ export default function ReservasPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-stone-600 mb-1">Hasta</label>
+                <label className="block text-xs font-medium text-stone-600 mb-1">
+                  Hasta
+                </label>
                 <input
                   type="date"
                   value={filtroHasta}
@@ -470,10 +613,14 @@ export default function ReservasPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-stone-600 mb-1">Estado</label>
+                <label className="block text-xs font-medium text-stone-600 mb-1">
+                  Estado
+                </label>
                 <select
                   value={filtroEstado}
-                  onChange={(e) => setFiltroEstado(e.target.value as EstadoReserva | '')}
+                  onChange={(e) =>
+                    setFiltroEstado(e.target.value as EstadoReserva | "")
+                  }
                   className="input w-full"
                 >
                   {ESTADOS.map((e) => (
@@ -484,8 +631,12 @@ export default function ReservasPage() {
                 </select>
               </div>
               <div className="flex items-end gap-2">
-                <button onClick={cargarReservas} disabled={cargando} className="btn-primary flex-1 justify-center">
-                  {cargando ? 'Buscando...' : 'Filtrar'}
+                <button
+                  onClick={cargarReservas}
+                  disabled={cargando}
+                  className="btn-primary flex-1 justify-center"
+                >
+                  {cargando ? "Buscando..." : "Filtrar"}
                 </button>
                 <button onClick={limpiarFiltros} className="btn-ghost">
                   Limpiar
@@ -495,7 +646,9 @@ export default function ReservasPage() {
           </div>
 
           {error && (
-            <div className="card p-6 text-red-700 bg-red-50 border-red-200 mb-4">{error}</div>
+            <div className="card p-6 text-red-700 bg-red-50 border-red-200 mb-4">
+              {error}
+            </div>
           )}
 
           {reservas === null && !error && (
@@ -525,37 +678,58 @@ export default function ReservasPage() {
                       <th className="px-3 py-3 font-semibold">Hora</th>
                       <th className="px-3 py-3 font-semibold">Cliente</th>
                       <th className="px-3 py-3 font-semibold">Contacto</th>
-                      <th className="px-3 py-3 font-semibold text-center">Personas</th>
+                      <th className="px-3 py-3 font-semibold text-center">
+                        Personas
+                      </th>
                       <th className="px-3 py-3 font-semibold">Mesa</th>
                       <th className="px-3 py-3 font-semibold">Estado</th>
-                      <th className="px-3 py-3 font-semibold w-44 text-right">Acciones</th>
+                      <th className="px-3 py-3 font-semibold w-44 text-right">
+                        Acciones
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-100 bg-white">
                     {reservas.map((r) => {
-                      const nombreMostrar = r.cliente?.nombreCompleto ?? r.nombreCliente ?? '—';
-                      const telefonoMostrar = r.cliente?.telefono ?? r.telefonoCliente ?? null;
+                      const nombreMostrar =
+                        r.cliente?.nombreCompleto ?? r.nombreCliente ?? "—";
+                      const telefonoMostrar =
+                        r.cliente?.telefono ?? r.telefonoCliente ?? null;
                       return (
-                        <tr key={r.id} className="hover:bg-cream-100/60 transition">
+                        <tr
+                          key={r.id}
+                          className="hover:bg-cream-100/60 transition"
+                        >
                           <td className="px-3 py-3 font-mono text-stone-700">
                             {formatearFecha(r.fechaReserva)}
                           </td>
-                          <td className="px-3 py-3 font-mono text-stone-700">{r.horaReserva}</td>
+                          <td className="px-3 py-3 font-mono text-stone-700">
+                            {r.horaReserva}
+                          </td>
                           <td className="px-3 py-3">
-                            <div className="font-medium text-stone-800">{nombreMostrar}</div>
+                            <div className="font-medium text-stone-800">
+                              {nombreMostrar}
+                            </div>
                             {r.cliente && (
-                              <div className="text-xs text-stone-500">{r.cliente.correo}</div>
+                              <div className="text-xs text-stone-500">
+                                {r.cliente.correo}
+                              </div>
                             )}
                           </td>
-                          <td className="px-3 py-3 text-stone-700">{telefonoMostrar ?? '—'}</td>
+                          <td className="px-3 py-3 text-stone-700">
+                            {telefonoMostrar ?? "—"}
+                          </td>
                           <td className="px-3 py-3 text-center font-medium text-stone-800">
                             {r.cantidadPersonas}
                           </td>
                           <td className="px-3 py-3 text-stone-700">
                             {r.mesaNombre ? (
-                              <span className="font-medium">{r.mesaNombre}</span>
+                              <span className="font-medium">
+                                {r.mesaNombre}
+                              </span>
                             ) : (
-                              <span className="text-stone-400">Sin asignar</span>
+                              <span className="text-stone-400">
+                                Sin asignar
+                              </span>
                             )}
                           </td>
                           <td className="px-3 py-3">
@@ -563,38 +737,51 @@ export default function ReservasPage() {
                           </td>
                           <td className="px-3 py-3">
                             <div className="flex flex-wrap gap-1 justify-end">
-                              {r.estado === 'PENDIENTE' && (
+                              {r.estado === "PENDIENTE" && (
                                 <button
-                                  onClick={() => cambiarEstado(r.id, 'CONFIRMADA')}
+                                  onClick={() =>
+                                    cambiarEstado(r.id, "CONFIRMADA")
+                                  }
                                   className="text-xs px-2 py-1 rounded bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
                                 >
                                   Confirmar
                                 </button>
                               )}
-                              {(r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA') && (
+                              {(r.estado === "PENDIENTE" ||
+                                r.estado === "CONFIRMADA") && (
                                 <>
                                   <button
-                                    onClick={() => cambiarEstado(r.id, 'COMPLETADA')}
+                                    onClick={() =>
+                                      cambiarEstado(r.id, "COMPLETADA")
+                                    }
                                     className="text-xs px-2 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200"
                                   >
                                     Completar
                                   </button>
                                   <button
-                                    onClick={() => cambiarEstado(r.id, 'NO_ASISTIO')}
+                                    onClick={() =>
+                                      cambiarEstado(r.id, "NO_ASISTIO")
+                                    }
                                     className="text-xs px-2 py-1 rounded bg-red-50 text-red-700 hover:bg-red-100 border border-red-200"
                                   >
                                     No asistió
                                   </button>
                                   <button
-                                    onClick={() => cambiarEstado(r.id, 'CANCELADA')}
+                                    onClick={() =>
+                                      cambiarEstado(r.id, "CANCELADA")
+                                    }
                                     className="text-xs px-2 py-1 rounded bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200"
                                   >
                                     Cancelar
                                   </button>
                                 </>
                               )}
-                              {(r.estado === 'COMPLETADA' || r.estado === 'CANCELADA' || r.estado === 'NO_ASISTIO') && (
-                                <span className="text-xs text-stone-400">—</span>
+                              {(r.estado === "COMPLETADA" ||
+                                r.estado === "CANCELADA" ||
+                                r.estado === "NO_ASISTIO") && (
+                                <span className="text-xs text-stone-400">
+                                  —
+                                </span>
                               )}
                             </div>
                           </td>
@@ -607,6 +794,139 @@ export default function ReservasPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* === MODAL NUEVA RESERVA === */}
+      {showNuevaReserva && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-stone-900">
+                  ➕ Nueva reserva
+                </h3>
+                <button
+                  onClick={() => setShowNuevaReserva(false)}
+                  className="text-stone-400 hover:text-stone-600 text-xl"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <p className="text-sm text-stone-500 mb-4">
+                📅 {formatearFecha(fechaCalendario)} — Reserva manual (teléfono
+                / presencial)
+              </p>
+
+              <form onSubmit={crearReservaManual} className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-stone-600 mb-1">
+                      Hora <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="time"
+                      required
+                      value={nuevaReservaHora}
+                      onChange={(e) => setNuevaReservaHora(e.target.value)}
+                      className="input w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-stone-600 mb-1">
+                      Personas <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min={1}
+                      max={50}
+                      value={nuevaReservaPersonas}
+                      onChange={(e) =>
+                        setNuevaReservaPersonas(Number(e.target.value))
+                      }
+                      className="input w-full"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-stone-600 mb-1">
+                    Nombre del cliente
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ej: Juan Pérez"
+                    value={nuevaReservaNombre}
+                    onChange={(e) => setNuevaReservaNombre(e.target.value)}
+                    className="input w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-stone-600 mb-1">
+                    Teléfono
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="Ej: 11 1234-5678"
+                    value={nuevaReservaTelefono}
+                    onChange={(e) => setNuevaReservaTelefono(e.target.value)}
+                    className="input w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-stone-600 mb-1">
+                    Mesa
+                  </label>
+                  <select
+                    value={nuevaReservaMesaId}
+                    onChange={(e) => setNuevaReservaMesaId(e.target.value)}
+                    className="input w-full"
+                  >
+                    <option value="">Automática</option>
+                    {mesas.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.nombre ?? "Mesa"} — {m.capacidad} personas
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-stone-600 mb-1">
+                    Notas / Pedidos especiales
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Alergias, preferencias, etc."
+                    value={nuevaReservaNotas}
+                    onChange={(e) => setNuevaReservaNotas(e.target.value)}
+                    className="input w-full resize-none"
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="submit"
+                    disabled={nuevaReservaSaving || !nuevaReservaHora}
+                    className="btn-primary flex-1 justify-center"
+                  >
+                    {nuevaReservaSaving ? "Creando..." : "✓ Crear reserva"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowNuevaReserva(false)}
+                    className="btn-ghost"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
