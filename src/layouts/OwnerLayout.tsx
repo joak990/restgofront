@@ -12,21 +12,32 @@ export default function OwnerLayout() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-white shadow border-b">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="font-bold text-lg text-gray-900">
-            🍽️ RestaurantGo · Owners
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50">
+      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-orange-100 sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+          <Link to="/dueno" className="flex items-center gap-2.5 group">
+            <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-sm group-hover:scale-105 transition-transform">
+              <span className="text-lg">🍽️</span>
+            </span>
+            <div>
+              <h1 className="font-bold text-stone-900 leading-tight">RestaurantGo</h1>
+              <p className="text-xs text-stone-500 leading-tight">Panel de dueños</p>
+            </div>
           </Link>
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-3 text-sm">
             {user && (
-              <span className="text-gray-700">
-                {user.nombreCompleto} <span className="text-gray-400">({user.tipo})</span>
-              </span>
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="font-medium text-stone-800">{user.nombreCompleto}</span>
+                <span className="text-xs text-stone-500">{user.tipo}</span>
+              </div>
             )}
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center text-white font-medium shadow-sm">
+              {user?.nombreCompleto?.charAt(0).toUpperCase() ?? '?'}
+            </div>
             <button
               onClick={handleLogout}
-              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800"
+              className="btn-ghost text-sm py-1.5 px-3"
+              title="Cerrar sesión"
             >
               Salir
             </button>
@@ -34,9 +45,9 @@ export default function OwnerLayout() {
         </div>
       </header>
 
-      <div className="flex-1 max-w-6xl w-full mx-auto px-4 py-6">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 }

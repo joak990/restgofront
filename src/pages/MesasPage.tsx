@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { duenosApi, type Mesa } from '../api/duenos';
 
+const CAPACITY_EMOJI = ['🪑', '👤', '👥', '👨‍👩‍👧', '👨‍👩‍👧‍👦', '👨‍👩‍👧‍👦‍👦'];
+
 export default function MesasPage() {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<Mesa[] | null>(null);
@@ -28,47 +30,80 @@ export default function MesasPage() {
     refresh();
   }
 
-  if (error) return <div className="text-red-600">Error: {error}</div>;
-  if (!data) return <div className="text-gray-500">Cargando...</div>;
+  if (error)
+    return (
+      <div className="card p-6 text-red-700 bg-red-50 border-red-200">{error}</div>
+    );
+  if (!data)
+    return (
+      <div className="text-stone-500 flex items-center gap-2">
+        <span className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+        Cargando...
+      </div>
+    );
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-3">Mesas del restaurante</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-stone-900 flex items-center gap-2">
+          <span>🪑</span> Mesas
+        </h2>
+        <span className="text-sm text-stone-500">
+          {data.length} {data.length === 1 ? 'mesa' : 'mesas'} · capacidad total{' '}
+          <strong className="text-stone-700">
+            {data.reduce((acc, m) => acc + m.capacidad, 0)}
+          </strong>{' '}
+          personas
+        </span>
+      </div>
 
-      <table className="w-full bg-white rounded shadow text-sm">
-        <thead className="bg-gray-100 text-left">
-          <tr>
-            <th className="p-3">N°</th>
-            <th className="p-3">Capacidad</th>
-            <th className="p-3">Activa</th>
-            <th className="p-3"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.length === 0 && (
-            <tr>
-              <td colSpan={4} className="p-4 text-center text-gray-500">
-                Sin mesas cargadas
-              </td>
-            </tr>
-          )}
+      {data.length === 0 ? (
+        <div className="card p-8 text-center bg-orange-50/50 border-dashed">
+          <div className="text-4xl mb-2">🪑</div>
+          <p className="text-stone-700 font-medium">Sin mesas cargadas</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {data.map((m) => (
-            <tr key={m.id} className="border-t">
-              <td className="p-3">{m.numero}</td>
-              <td className="p-3">{m.capacidad}</td>
-              <td className="p-3">{m.activo ? 'Sí' : 'No'}</td>
-              <td className="p-3 text-right">
-                <button
-                  onClick={() => handleDelete(m.id)}
-                  className="text-red-600 hover:underline text-xs"
-                >
-                  Eliminar
-                </button>
-              </td>
-            </tr>
+            <div
+              key={m.id}
+              className={`card p-4 transition hover:shadow-md ${
+                m.activo ? '' : 'opacity-60'
+              }`}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center text-xl">
+                  🍽️
+                </div>
+                {m.activo ? (
+                  <span className="pill-green">Activa</span>
+                ) : (
+                  <span className="pill-gray">Inactiva</span>
+                )}
+              </div>
+              <div className="mb-2">
+                <div className="text-xs text-stone-500 uppercase tracking-wide">
+                  Mesa
+                </div>
+                <div className="text-2xl font-bold text-stone-900">#{m.numero}</div>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-stone-600">
+                <span>{CAPACITY_EMOJI[Math.min(m.capacidad, CAPACITY_EMOJI.length - 1)]}</span>
+                <span>
+                  Capacidad para{' '}
+                  <strong className="text-stone-800">{m.capacidad}</strong>
+                </span>
+              </div>
+              <button
+                onClick={() => handleDelete(m.id)}
+                className="btn-danger w-full mt-3 justify-center"
+              >
+                Eliminar
+              </button>
+            </div>
           ))}
-        </tbody>
-      </table>
+        </div>
+      )}
     </div>
   );
 }

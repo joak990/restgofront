@@ -2,9 +2,9 @@
 import { NavLink, Outlet, useParams } from 'react-router-dom';
 
 const tabs = [
-  { to: '', label: 'Info' },
-  { to: 'horarios', label: 'Horarios' },
-  { to: 'mesas', label: 'Mesas' },
+  { to: '', label: 'Info', icon: '📋' },
+  { to: 'horarios', label: 'Horarios', icon: '🕐' },
+  { to: 'mesas', label: 'Mesas', icon: '🪑' },
 ];
 
 export default function RestauranteDetallePage() {
@@ -12,29 +12,36 @@ export default function RestauranteDetallePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-2">Restaurante</h1>
-      <p className="text-sm text-gray-500 mb-4">ID: {id}</p>
-
-      <div className="border-b mb-4 flex gap-1">
-        {tabs.map((t) => (
-          <NavLink
-            key={t.to}
-            to={t.to}
-            end
-            className={({ isActive }) =>
-              `px-4 py-2 text-sm border-b-2 transition ${
-                isActive
-                  ? 'border-blue-600 text-blue-700 font-medium'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`
-            }
-          >
-            {t.label}
-          </NavLink>
-        ))}
+      <div className="mb-6 flex items-center gap-3">
+        <span className="text-3xl">🍴</span>
+        <div>
+          <h1 className="text-2xl font-bold text-stone-900">Restaurante</h1>
+          <p className="text-xs text-stone-500 font-mono">{id}</p>
+        </div>
       </div>
 
-      <Outlet />
+      <div className="card overflow-hidden">
+        <div className="border-b border-stone-100 flex gap-1 px-2">
+          {tabs.map((t) => (
+            <NavLink
+              key={t.to}
+              to={t.to}
+              end
+              className={({ isActive }) =>
+                `px-4 py-3 text-sm font-medium transition flex items-center gap-2 ${
+                  isActive ? 'tab-active' : 'tab-idle'
+                }`
+              }
+            >
+              <span>{t.icon}</span>
+              {t.label}
+            </NavLink>
+          ))}
+        </div>
+        <div className="p-6">
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 }
