@@ -1,5 +1,5 @@
 // filepath: src/api/duenos.ts
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 export interface Restaurante {
   id: string;
@@ -40,11 +40,7 @@ export interface Mesa {
 }
 
 export type EstadoReserva =
-  | 'PENDIENTE'
-  | 'CONFIRMADA'
-  | 'CANCELADA'
-  | 'NO_ASISTIO'
-  | 'COMPLETADA';
+  "PENDIENTE" | "CONFIRMADA" | "CANCELADA" | "NO_ASISTIO" | "COMPLETADA";
 
 export interface Reserva {
   id: string;
@@ -107,7 +103,12 @@ export interface CalendarioReserva {
 export interface CalendarioResponse {
   fecha: string;
   diaSemana: number;
-  horarios: { id: string; horaApertura: string; horaCierre: string; cerrado: boolean }[];
+  horarios: {
+    id: string;
+    horaApertura: string;
+    horaCierre: string;
+    cerrado: boolean;
+  }[];
   slots: CalendarioSlot[];
   reservas: CalendarioReserva[];
 }
@@ -135,12 +136,15 @@ export interface UpdateRestauranteBody extends Partial<CreateRestauranteBody> {}
 export const duenosApi = {
   // Restaurantes del dueño autenticado
   async getMisRestaurantes(): Promise<Restaurante[]> {
-    const { data } = await apiClient.get<Restaurante[]>('/duenos/restaurantes');
+    const { data } = await apiClient.get<Restaurante[]>("/duenos/restaurantes");
     return data;
   },
 
   async createRestaurante(body: CreateRestauranteBody): Promise<Restaurante> {
-    const { data } = await apiClient.post<Restaurante>('/duenos/restaurantes', body);
+    const { data } = await apiClient.post<Restaurante>(
+      "/duenos/restaurantes",
+      body,
+    );
     return data;
   },
 
@@ -157,7 +161,9 @@ export const duenosApi = {
 
   // Ubicaciones
   async getProvincias(): Promise<Provincia[]> {
-    const { data } = await apiClient.get<Provincia[]>('/ubicaciones/provincias');
+    const { data } = await apiClient.get<Provincia[]>(
+      "/ubicaciones/provincias",
+    );
     return data;
   },
 
@@ -177,7 +183,7 @@ export const duenosApi = {
   },
   async createHorario(
     restauranteId: string,
-    body: Omit<Horario, 'id' | 'restauranteId'>,
+    body: Omit<Horario, "id" | "restauranteId">,
   ): Promise<Horario> {
     const { data } = await apiClient.post<Horario>(
       `/duenos/restaurantes/${restauranteId}/horarios`,
@@ -187,7 +193,7 @@ export const duenosApi = {
   },
   async bulkCreateHorarios(
     restauranteId: string,
-    horarios: Array<Omit<Horario, 'id' | 'restauranteId'>>,
+    horarios: Array<Omit<Horario, "id" | "restauranteId">>,
   ): Promise<Horario[]> {
     const { data } = await apiClient.post<Horario[]>(
       `/duenos/restaurantes/${restauranteId}/horarios/bulk`,
@@ -198,7 +204,7 @@ export const duenosApi = {
   async updateHorario(
     restauranteId: string,
     horarioId: string,
-    body: Partial<Omit<Horario, 'id' | 'restauranteId'>>,
+    body: Partial<Omit<Horario, "id" | "restauranteId">>,
   ): Promise<Horario> {
     const { data } = await apiClient.patch<Horario>(
       `/duenos/restaurantes/${restauranteId}/horarios/${horarioId}`,
@@ -207,7 +213,9 @@ export const duenosApi = {
     return data;
   },
   async deleteHorario(restauranteId: string, horarioId: string): Promise<void> {
-    await apiClient.delete(`/duenos/restaurantes/${restauranteId}/horarios/${horarioId}`);
+    await apiClient.delete(
+      `/duenos/restaurantes/${restauranteId}/horarios/${horarioId}`,
+    );
   },
 
   // Mesas
@@ -239,11 +247,16 @@ export const duenosApi = {
     return data;
   },
   async deleteMesa(restauranteId: string, mesaId: string): Promise<void> {
-    await apiClient.delete(`/duenos/restaurantes/${restauranteId}/mesas/${mesaId}`);
+    await apiClient.delete(
+      `/duenos/restaurantes/${restauranteId}/mesas/${mesaId}`,
+    );
   },
 
   // Calendario
-  async getCalendario(restauranteId: string, fecha: string): Promise<CalendarioResponse> {
+  async getCalendario(
+    restauranteId: string,
+    fecha: string,
+  ): Promise<CalendarioResponse> {
     const { data } = await apiClient.get<CalendarioResponse>(
       `/duenos/restaurantes/${restauranteId}/calendario`,
       { params: { fecha } },
@@ -273,11 +286,30 @@ export const duenosApi = {
   async actualizarEstadoReserva(
     restauranteId: string,
     reservaId: string,
-    estado: 'CONFIRMADA' | 'CANCELADA' | 'NO_ASISTIO' | 'COMPLETADA',
+    estado: "CONFIRMADA" | "CANCELADA" | "NO_ASISTIO" | "COMPLETADA",
   ): Promise<Reserva> {
     const { data } = await apiClient.patch<Reserva>(
       `/duenos/restaurantes/${restauranteId}/reservas/${reservaId}`,
       { estado },
+    );
+    return data;
+  },
+
+  async crearReservaDueno(
+    restauranteId: string,
+    body: {
+      fecha: string;
+      hora: string;
+      cantidadPersonas: number;
+      nombreCliente?: string;
+      telefonoCliente?: string;
+      mesaId?: string;
+      pedidosEspeciales?: string;
+    },
+  ): Promise<Reserva> {
+    const { data } = await apiClient.post<Reserva>(
+      `/duenos/restaurantes/${restauranteId}/reservas`,
+      body,
     );
     return data;
   },
