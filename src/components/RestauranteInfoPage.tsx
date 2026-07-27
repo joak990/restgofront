@@ -79,7 +79,7 @@ export default function RestauranteInfoPage() {
   if (loading)
     return (
       <div className="text-stone-500 flex items-center gap-2">
-        <span className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+        <span className="w-4 h-4 border-2 border-forest-600 border-t-transparent rounded-full animate-spin" />
         Cargando...
       </div>
     );
@@ -261,14 +261,14 @@ export default function RestauranteInfoPage() {
         <div className="card p-5 space-y-4">
           <h4 className="font-semibold text-stone-900">Estadísticas</h4>
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-lg bg-orange-50 text-center">
-              <div className="text-2xl font-bold text-orange-600">
+            <div className="p-3 rounded-lg bg-cream-100 text-center">
+              <div className="text-2xl font-bold text-forest-700">
                 {restaurante._count?.mesas ?? 0}
               </div>
               <div className="text-xs text-stone-500">Mesas</div>
             </div>
-            <div className="p-3 rounded-lg bg-orange-50 text-center">
-              <div className="text-2xl font-bold text-orange-600">
+            <div className="p-3 rounded-lg bg-cream-100 text-center">
+              <div className="text-2xl font-bold text-forest-700">
                 {restaurante._count?.platos ?? 0}
               </div>
               <div className="text-xs text-stone-500">Platos</div>

@@ -106,7 +106,7 @@ export default function MisRestaurantesPage() {
   if (!data)
     return (
       <div className="text-stone-500 flex items-center gap-2">
-        <span className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+        <span className="w-4 h-4 border-2 border-forest-600 border-t-transparent rounded-full animate-spin" />
         Cargando...
       </div>
     );
@@ -144,7 +144,7 @@ export default function MisRestaurantesPage() {
               to={`/dueno/restaurantes/${r.id}`}
               className="card hover:shadow-md hover:-translate-y-0.5 transition-all group"
             >
-              <div className="h-32 bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 flex items-center justify-center text-6xl group-hover:scale-110 transition-transform">
+              <div className="h-32 bg-gradient-to-br from-forest-500 via-forest-600 to-forest-800 flex items-center justify-center text-6xl group-hover:scale-110 transition-transform">
                 {emojiFor(r.nombre)}
               </div>
               <div className="p-4">

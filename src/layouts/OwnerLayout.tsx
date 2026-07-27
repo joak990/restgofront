@@ -12,11 +12,11 @@ export default function OwnerLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50">
-      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-orange-100 sticky top-0 z-10">
+    <div className="min-h-screen bg-gradient-to-b from-cream-50 to-cream-100">
+      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-cream-200 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <Link to="/dueno" className="flex items-center gap-2.5 group">
-            <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-sm group-hover:scale-105 transition-transform">
+            <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-forest-600 to-forest-800 text-cream-50 shadow-sm group-hover:scale-105 transition-transform">
               <span className="text-lg">🍽️</span>
             </span>
             <div>
@@ -31,7 +31,7 @@ export default function OwnerLayout() {
                 <span className="text-xs text-stone-500">{user.tipo}</span>
               </div>
             )}
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center text-white font-medium shadow-sm">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-forest-500 to-forest-700 flex items-center justify-center text-cream-50 font-medium shadow-sm">
               {user?.nombreCompleto?.charAt(0).toUpperCase() ?? '?'}
             </div>
             <button

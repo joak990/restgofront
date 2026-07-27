@@ -191,7 +191,7 @@ export default function ReservasPage() {
             onClick={() => setVista('calendario')}
             className={`px-3 py-1.5 text-sm rounded-md font-medium transition ${
               vista === 'calendario'
-                ? 'bg-white shadow-sm text-orange-700'
+                ? 'bg-white shadow-sm text-forest-700'
                 : 'text-stone-600 hover:text-stone-800'
             }`}
           >
@@ -201,7 +201,7 @@ export default function ReservasPage() {
             onClick={() => setVista('tabla')}
             className={`px-3 py-1.5 text-sm rounded-md font-medium transition ${
               vista === 'tabla'
-                ? 'bg-white shadow-sm text-orange-700'
+                ? 'bg-white shadow-sm text-forest-700'
                 : 'text-stone-600 hover:text-stone-800'
             }`}
           >
@@ -268,14 +268,14 @@ export default function ReservasPage() {
 
           {calendarioLoading && (
             <div className="text-stone-500 flex items-center gap-2 mb-4">
-              <span className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+              <span className="w-4 h-4 border-2 border-forest-600 border-t-transparent rounded-full animate-spin" />
               Cargando calendario...
             </div>
           )}
 
           {/* Calendario vacío / sin horarios */}
           {calendario && !calendarioLoading && calendario.horarios.length === 0 && (
-            <div className="card p-8 text-center bg-orange-50/50 border-dashed mb-4">
+            <div className="card p-8 text-center bg-cream-100/70 border-dashed mb-4">
               <div className="text-4xl mb-2">🔕</div>
               <p className="text-stone-700 font-medium">
                 Sin horarios configurados para este día
@@ -312,7 +312,7 @@ export default function ReservasPage() {
                           onClick={() =>
                             setSelectedSlot(isSelected ? null : slot)
                           }
-                          className={`relative p-2 rounded-lg border text-center transition hover:shadow-sm ${slotColor(slot)} ${isSelected ? 'ring-2 ring-orange-500 shadow-md' : ''}`}
+                          className={`relative p-2 rounded-lg border text-center transition hover:shadow-sm ${slotColor(slot)} ${isSelected ? 'ring-2 ring-forest-600 shadow-md' : ''}`}
                           title={`${slot.hora}: ${slot.mesasDisponibles}/${slot.totalMesas} mesas libres`}
                         >
                           <div className="text-sm font-bold font-mono">{slot.hora}</div>
@@ -321,7 +321,7 @@ export default function ReservasPage() {
                           </div>
                           {/* Indicador de reservas */}
                           {reservasSlot.length > 0 && (
-                            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-orange-500 text-white text-[10px] flex items-center justify-center font-bold">
+                            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-forest-600 text-cream-50 text-[10px] flex items-center justify-center font-bold">
                               {reservasSlot.length}
                             </div>
                           )}
@@ -332,7 +332,7 @@ export default function ReservasPage() {
 
                   {/* Detalle del slot seleccionado */}
                   {selectedSlot && selectedSlot.bloque === bloque && (
-                    <div className="card p-4 mt-3 border-orange-200 bg-orange-50/30">
+                    <div className="card p-4 mt-3 border-cream-300 bg-cream-100/40">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="font-semibold text-stone-900">
                           📍 Slot {selectedSlot.hora} — {selectedSlot.mesasDisponibles} de{' '}
@@ -438,7 +438,7 @@ export default function ReservasPage() {
                 <span className="w-3 h-3 rounded bg-red-100 border border-red-300" /> Completo
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-4 h-4 rounded-full bg-orange-500 text-white text-[10px] flex items-center justify-center">1</span> Reserva activa
+                <span className="w-4 h-4 rounded-full bg-forest-600 text-cream-50 text-[10px] flex items-center justify-center">1</span> Reserva activa
               </span>
             </div>
           )}
@@ -500,13 +500,13 @@ export default function ReservasPage() {
 
           {reservas === null && !error && (
             <div className="text-stone-500 flex items-center gap-2">
-              <span className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+              <span className="w-4 h-4 border-2 border-forest-600 border-t-transparent rounded-full animate-spin" />
               Cargando...
             </div>
           )}
 
           {reservas && reservas.length === 0 && (
-            <div className="card p-8 text-center bg-orange-50/50 border-dashed">
+            <div className="card p-8 text-center bg-cream-100/70 border-dashed">
               <div className="text-4xl mb-2">📅</div>
               <p className="text-stone-700 font-medium">Sin reservas</p>
               <p className="text-xs text-stone-500 mt-1">
@@ -519,7 +519,7 @@ export default function ReservasPage() {
             <div className="overflow-hidden rounded-xl border border-stone-200">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gradient-to-r from-orange-50 to-amber-50 text-left text-stone-700">
+                  <thead className="bg-gradient-to-r from-cream-100 to-cream-200 text-left text-stone-700">
                     <tr>
                       <th className="px-3 py-3 font-semibold">Fecha</th>
                       <th className="px-3 py-3 font-semibold">Hora</th>
@@ -536,7 +536,7 @@ export default function ReservasPage() {
                       const nombreMostrar = r.cliente?.nombreCompleto ?? r.nombreCliente ?? '—';
                       const telefonoMostrar = r.cliente?.telefono ?? r.telefonoCliente ?? null;
                       return (
-                        <tr key={r.id} className="hover:bg-orange-50/40 transition">
+                        <tr key={r.id} className="hover:bg-cream-100/60 transition">
                           <td className="px-3 py-3 font-mono text-stone-700">
                             {formatearFecha(r.fechaReserva)}
                           </td>

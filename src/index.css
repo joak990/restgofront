@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-orange-50 text-stone-900;
+    @apply bg-cream-50 text-stone-900;
     font-family:
       ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
       'Helvetica Neue', Arial, sans-serif;
@@ -13,11 +13,11 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 text-white font-medium shadow-sm hover:shadow-md hover:from-orange-600 hover:to-red-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-br from-forest-600 to-forest-800 text-cream-50 font-medium shadow-sm hover:shadow-md hover:from-forest-700 hover:to-forest-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white text-stone-700 font-medium border border-stone-200 hover:bg-stone-50 hover:border-stone-300 transition;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white text-stone-700 font-medium border border-stone-200 hover:bg-cream-50 hover:border-stone-300 transition;
   }
 
   .btn-danger {
@@ -25,7 +25,7 @@
   }
 
   .input {
-    @apply w-full px-3.5 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition;
+    @apply w-full px-3.5 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:border-transparent transition;
   }
 
   .card {
@@ -37,11 +37,11 @@
   }
 
   .pill-green {
-    @apply pill bg-emerald-100 text-emerald-800;
+    @apply pill bg-forest-100 text-forest-800;
   }
 
   .pill-amber {
-    @apply pill bg-amber-100 text-amber-800;
+    @apply pill bg-cream-200 text-stone-700;
   }
 
   .pill-blue {
@@ -61,7 +61,7 @@
   }
 
   .tab-active {
-    @apply text-orange-600 border-b-2 border-orange-500;
+    @apply text-forest-700 border-b-2 border-forest-700;
   }
 
   .tab-idle {

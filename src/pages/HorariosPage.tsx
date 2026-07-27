@@ -110,7 +110,7 @@ export default function HorariosPage() {
   if (!data)
     return (
       <div className="text-stone-500 flex items-center gap-2">
-        <span className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+        <span className="w-4 h-4 border-2 border-forest-600 border-t-transparent rounded-full animate-spin" />
         Cargando...
       </div>
     );
@@ -137,7 +137,7 @@ export default function HorariosPage() {
 
       {/* Formulario crear/editar */}
       {showForm && (
-        <div className="card p-5 mb-4 border-orange-200 bg-orange-50/30">
+        <div className="card p-5 mb-4 border-cream-300 bg-cream-100/40">
           <h3 className="font-semibold text-stone-900 mb-3">
             {editing ? 'Editar horario' : 'Nuevo horario'}
           </h3>
@@ -183,7 +183,7 @@ export default function HorariosPage() {
                     type="checkbox"
                     checked={form.cerrado}
                     onChange={(e) => handleField('cerrado', e.target.checked)}
-                    className="w-4 h-4 rounded border-stone-300 text-orange-500 focus:ring-orange-500"
+                    className="w-4 h-4 rounded border-stone-300 text-forest-700 focus:ring-forest-700"
                   />
                   Cerrado
                 </label>
@@ -217,7 +217,7 @@ export default function HorariosPage() {
       )}
 
       {data.length === 0 && !showForm ? (
-        <div className="card p-8 text-center bg-orange-50/50 border-dashed">
+        <div className="card p-8 text-center bg-cream-100/70 border-dashed">
           <div className="text-4xl mb-2">⏰</div>
           <p className="text-stone-700 font-medium">Sin horarios cargados</p>
           <p className="text-xs text-stone-500 mt-1">
@@ -230,7 +230,7 @@ export default function HorariosPage() {
       ) : (
         <div className="overflow-hidden rounded-xl border border-stone-200">
           <table className="w-full text-sm">
-            <thead className="bg-gradient-to-r from-orange-50 to-amber-50 text-left text-stone-700">
+            <thead className="bg-gradient-to-r from-cream-100 to-cream-200 text-left text-stone-700">
               <tr>
                 <th className="px-4 py-3 font-semibold">Día</th>
                 <th className="px-4 py-3 font-semibold">Apertura</th>
@@ -241,7 +241,7 @@ export default function HorariosPage() {
             </thead>
             <tbody className="divide-y divide-stone-100 bg-white">
               {sorted.map((h) => (
-                <tr key={h.id} className="hover:bg-orange-50/40 transition">
+                <tr key={h.id} className="hover:bg-cream-100/60 transition">
                   <td className="px-4 py-3 font-medium text-stone-800">
                     <span className="mr-2">{DIAS_EMOJI[h.diaSemana]}</span>
                     {DIAS[h.diaSemana]}
