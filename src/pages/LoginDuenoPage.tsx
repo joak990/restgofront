@@ -1,51 +1,28 @@
 // filepath: src/pages/LoginDuenoPage.tsx
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { signInWithPopup, type User } from 'firebase/auth';
-import { firebaseAuth, googleProvider, isFirebaseReady } from '../lib/firebase';
-import { apiClient, auth } from '../api/client';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authApi } from "../api/auth";
 
 /**
- * Login específico para dueños.
+ * Login específico para dueños con email y password.
  * - Si el email existe → JWT propio + redirige a /dueno
  * - Si no existe → tempToken de onboarding + redirige a /onboarding/dueno
  */
 export default function LoginDuenoPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const ready = isFirebaseReady();
 
-  async function handleGoogleLogin() {
+  async function handleEmailLogin(e: React.FormEvent) {
+    e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      if (!firebaseAuth) throw new Error('Firebase no está configurado');
-
-      // 1) Login con Firebase
-      const credential = await signInWithPopup(firebaseAuth, googleProvider);
-      const idToken = await credential.user.getIdToken(true);
-
-      // 2) Enviar idToken al backend
-      const { data } = await apiClient.post('/auth/firebase', { idToken });
-
-      // 3) Caso 1: ya estaba registrado
-      if (data.accessToken) {
-        auth.setToken(data.accessToken);
-        auth.setUser(data);
-        navigate('/dueno', { replace: true });
-        return;
-      }
-
-      // 4) Caso 2: necesita onboarding
-      if (data.needsOnboarding) {
-        // Guardamos el tempToken en una storage temporal
-        sessionStorage.setItem('restaurantgo_onboarding', JSON.stringify(data));
-        navigate('/onboarding/dueno', { replace: true });
-        return;
-      }
-
-      throw new Error('Respuesta inesperada del servidor');
+      await authApi.login({ email, password });
+      navigate("/dueno", { replace: true });
+      return;
     } catch (err) {
       const msg = (err as Error).message;
       setError(msg);
@@ -66,35 +43,51 @@ export default function LoginDuenoPage() {
         </div>
 
         <div className="card p-8 space-y-5">
-          {!ready && (
-            <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg">
-              Firebase no está configurado.
-            </div>
-          )}
-
           <p className="text-sm text-stone-600 text-center">
-            Si es la primera vez que ingresás, te vamos a pedir que completes tu
-            perfil para verificar tu identidad.
+            Ingresá tu email y password para continuar.
           </p>
 
-          <button
-            type="button"
-            disabled={loading || !ready}
-            onClick={handleGoogleLogin}
-            className="btn-primary w-full flex items-center justify-center gap-3 disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Conectando...
-              </>
-            ) : (
-              <>
-                <GoogleIcon />
-                Continuar con Google
-              </>
-            )}
-          </button>
+          <form onSubmit={handleEmailLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-forest-500 focus:border-forest-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-forest-500 focus:border-forest-500"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full flex items-center justify-center gap-3 disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Ingresando...
+                </>
+              ) : (
+                "Iniciar sesión"
+              )}
+            </button>
+          </form>
 
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
@@ -104,32 +97,20 @@ export default function LoginDuenoPage() {
         </div>
 
         <p className="text-center text-xs text-stone-500 mt-6">
-          ¿Sos empleado o administrador? Usá el{' '}
+          ¿Sos empleado o administrador? Usá el{" "}
           <a href="/login" className="underline">
             login general
           </a>
           .
         </p>
+
+        <p className="text-center text-xs text-stone-500 mt-2">
+          ¿No tenés cuenta?{" "}
+          <a href="/register" className="underline font-medium">
+            Creá tu cuenta
+          </a>
+        </p>
       </div>
     </div>
   );
 }
-
-function GoogleIcon() {
-  return (
-    <svg
-      className="w-5 h-5"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path
-        fill="#fff"
-        d="M21.35 11.1H12v3.2h5.35c-.5 2.6-2.7 4.5-5.35 4.5a6 6 0 1 1 0-12 5.5 5.5 0 0 1 3.85 1.5l2.3-2.3A8.9 8.9 0 0 0 12 3a9 9 0 1 0 9 9c0-.6-.05-1.2-.15-1.9z"
-      />
-    </svg>
-  );
-}
-
-// evitar warning de unused
-void ({} as User);

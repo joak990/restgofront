@@ -2,6 +2,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import LoginDuenoPage from "./pages/LoginDuenoPage";
+import RegisterPage from "./pages/RegisterPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import PendientePage from "./pages/PendientePage";
 import MisRestaurantesPage from "./pages/MisRestaurantesPage";
@@ -47,6 +48,7 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/login-dueno" element={<LoginDuenoPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="/onboarding/dueno" element={<OnboardingPage />} />
       <Route path="/dueno/pendiente" element={<PendientePage />} />
       {/* Demo: visualizador de reservaciones + 3 mesas con datos mockeados */}

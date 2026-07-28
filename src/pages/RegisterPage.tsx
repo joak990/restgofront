@@ -1,26 +1,66 @@
-// filepath: src/pages/LoginPage.tsx
+// filepath: src/pages/RegisterPage.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authApi, rutaPorTipo } from "../api/auth";
+import { authApi } from "../api/auth";
 
-export default function LoginPage() {
+interface RegisterResponse {
+  needsOnboarding?: boolean;
+  tempToken?: string;
+  email?: string;
+  nombreCompleto?: string;
+  accessToken?: string;
+  tipo?: string;
+}
+
+export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nombreCompleto, setNombreCompleto] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
-  async function handleEmailLogin(e: React.FormEvent) {
+  async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (password !== confirmPassword) {
+      setError("Las passwords no coinciden.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("La password debe tener al menos 6 caracteres.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const data = await authApi.login({ email, password });
-      navigate(rutaPorTipo(data), { replace: true });
+      const data = (await authApi.register({
+        email,
+        password,
+        nombreCompleto,
+      })) as RegisterResponse;
+      // Si necesita onboarding, redirigir
+      if (data.needsOnboarding && data.tempToken) {
+        sessionStorage.setItem(
+          "restaurantgo_onboarding",
+          JSON.stringify({
+            needsOnboarding: true,
+            tempToken: data.tempToken,
+            email: data.email,
+            nombre: data.nombreCompleto,
+          }),
+        );
+        navigate("/onboarding/dueno", { replace: true });
+        return;
+      }
+      // Si no necesita onboarding, redirigir al login
+      navigate("/login", { replace: true });
     } catch (err) {
       const msg = (err as Error).message;
       setError(msg);
-      await authApi.logout();
     } finally {
       setLoading(false);
     }
@@ -34,13 +74,25 @@ export default function LoginPage() {
             🍽️
           </div>
           <h1 className="text-3xl font-bold text-stone-900">RestaurantGo</h1>
-          <p className="text-stone-600 mt-1">
-            Dueños · Empleados · Administradores
-          </p>
+          <p className="text-stone-600 mt-1">Creá tu cuenta</p>
         </div>
 
         <div className="card p-8 space-y-5">
-          <form onSubmit={handleEmailLogin} className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1">
+                Nombre completo
+              </label>
+              <input
+                type="text"
+                value={nombreCompleto}
+                onChange={(e) => setNombreCompleto(e.target.value)}
+                className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-forest-500 focus:border-forest-500"
+                required
+                minLength={2}
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-1">
                 Email
@@ -53,6 +105,7 @@ export default function LoginPage() {
                 required
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-1">
                 Password
@@ -63,6 +116,21 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-forest-500 focus:border-forest-500"
                 required
+                minLength={6}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1">
+                Confirmar password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-forest-500 focus:border-forest-500"
+                required
+                minLength={6}
               />
             </div>
 
@@ -74,10 +142,10 @@ export default function LoginPage() {
               {loading ? (
                 <>
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Ingresando...
+                  Creando cuenta...
                 </>
               ) : (
-                "Iniciar sesión"
+                "Crear cuenta"
               )}
             </button>
           </form>
@@ -89,20 +157,16 @@ export default function LoginPage() {
           )}
 
           <p className="text-xs text-stone-500 text-center">
-            Dueños, empleados y administradores de plataforma usan el mismo
-            acceso. Te llevamos al panel correcto según tu rol.
-          </p>
-
-          <p className="text-xs text-stone-500 text-center">
-            ¿No tenés cuenta?{" "}
-            <a href="/register" className="underline font-medium">
-              Creá tu cuenta
+            ¿Ya tenés cuenta?{" "}
+            <a href="/login" className="underline">
+              Iniciá sesión
             </a>
           </p>
         </div>
 
         <p className="text-center text-xs text-stone-500 mt-6">
-          Reservas · Mesas · Horarios · Todo en un solo lugar
+          Al registrarte, después podrás completar tu perfil de dueño de
+          restaurante.
         </p>
       </div>
     </div>
