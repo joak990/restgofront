@@ -1,6 +1,9 @@
 // filepath: src/App.tsx
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
+import LoginDuenoPage from "./pages/LoginDuenoPage";
+import OnboardingPage from "./pages/OnboardingPage";
+import PendientePage from "./pages/PendientePage";
 import MisRestaurantesPage from "./pages/MisRestaurantesPage";
 import RestauranteDetallePage from "./pages/RestauranteDetallePage";
 import RestauranteInfoPage from "./components/RestauranteInfoPage";
@@ -42,6 +45,9 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/login-dueno" element={<LoginDuenoPage />} />
+      <Route path="/onboarding/dueno" element={<OnboardingPage />} />
+      <Route path="/dueno/pendiente" element={<PendientePage />} />
 
       <Route
         path="/dueno"
@@ -61,8 +67,8 @@ export default function App() {
         <Route path="restaurantes/:id/reservas" element={<ReservasPage />} />
       </Route>
 
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to="/login-dueno" replace />} />
+      <Route path="*" element={<Navigate to="/login-dueno" replace />} />
     </Routes>
   );
 }
