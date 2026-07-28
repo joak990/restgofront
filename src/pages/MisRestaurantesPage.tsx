@@ -120,9 +120,18 @@ export default function MisRestaurantesPage() {
             {data.length} {data.length === 1 ? 'restaurante' : 'restaurantes'} en tu cuenta
           </p>
         </div>
-        <button onClick={() => setShowModal(true)} className="btn-primary">
-          + Nuevo restaurante
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/demo/reservas"
+            className="btn-ghost text-sm"
+            title="Demo con datos mockeados"
+          >
+            🪑 Vista de mesa
+          </Link>
+          <button onClick={() => setShowModal(true)} className="btn-primary">
+            + Nuevo restaurante
+          </button>
+        </div>
       </div>
 
       {data.length === 0 ? (
