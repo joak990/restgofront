@@ -1,5 +1,6 @@
 // filepath: src/api/client.ts
 import axios from 'axios';
+import { verificationCache } from '../lib/verification-cache';
 
 const TOKEN_KEY = 'restaurantgo_token';
 const USER_KEY = 'restaurantgo_user';
@@ -34,6 +35,7 @@ export const auth = {
   clear: () => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    verificationCache.clear();
   },
   setUser: (user: unknown) => localStorage.setItem(USER_KEY, JSON.stringify(user)),
   getUser: <T = unknown>(): T | null => {

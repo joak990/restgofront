@@ -14,34 +14,7 @@ import ReservasPage from "./pages/ReservasPage";
 import PerfilPage from "./pages/PerfilPage";
 import ReservationsDemoPage from "./pages/ReservationsDemoPage";
 import OwnerLayout from "./layouts/OwnerLayout";
-import { auth } from "./api/client";
-import type { LoginResponse, UserRole } from "./api/auth";
-
-function getUserType(): UserRole | null {
-  return auth.getUser<LoginResponse>()?.tipo ?? null;
-}
-
-/**
- * Guard genérico: exige sesión y, opcionalmente, que el rol esté en la lista.
- */
-function RequireRole({
-  roles,
-  children,
-}: {
-  roles: UserRole[];
-  children: React.ReactNode;
-}) {
-  const token = auth.getToken();
-  const tipo = getUserType();
-  if (!token || !tipo || !roles.includes(tipo)) {
-    return <Navigate to="/login" replace />;
-  }
-  return <>{children}</>;
-}
-
-const RequireDueno = ({ children }: { children: React.ReactNode }) => (
-  <RequireRole roles={["DUENO"]}>{children}</RequireRole>
-);
+import RequireDuenoVerificado from "./components/RequireDuenoVerificado";
 
 export default function App() {
   return (
@@ -57,9 +30,9 @@ export default function App() {
       <Route
         path="/dueno"
         element={
-          <RequireDueno>
+          <RequireDuenoVerificado>
             <OwnerLayout />
-          </RequireDueno>
+          </RequireDuenoVerificado>
         }
       >
         <Route index element={<MisRestaurantesPage />} />
