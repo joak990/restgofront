@@ -54,39 +54,55 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ toasts, addToast }}>
       {children}
-      {/* Toast container */}
+      {/* Popup centrado en pantalla */}
       {toasts.length > 0 && (
-        <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]">
-          {toasts.map((t) => (
-            <ToastItem key={t.id} toast={t} />
-          ))}
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center pointer-events-none">
+          <div className="flex flex-col gap-3 w-96 max-w-[calc(100vw-2rem)] pointer-events-auto">
+            {toasts.map((t) => (
+              <ToastPopup key={t.id} toast={t} />
+            ))}
+          </div>
         </div>
       )}
     </ToastContext.Provider>
   );
 }
 
-function ToastItem({ toast }: { toast: Toast }) {
+function ToastPopup({ toast }: { toast: Toast }) {
   const colors = {
-    error: "bg-red-600 text-white",
-    success: "bg-forest-600 text-white",
-    info: "bg-blue-600 text-white",
-    warning: "bg-amber-500 text-white",
+    error: "border-red-400 bg-white",
+    success: "border-forest-400 bg-white",
+    info: "border-blue-400 bg-white",
+    warning: "border-amber-400 bg-white",
+  };
+
+  const iconColors = {
+    error: "bg-red-100 text-red-600",
+    success: "bg-forest-100 text-forest-600",
+    info: "bg-blue-100 text-blue-600",
+    warning: "bg-amber-100 text-amber-600",
   };
 
   const icons = {
-    error: "❌",
-    success: "✅",
-    info: "ℹ️",
-    warning: "⚠️",
+    error: "✕",
+    success: "✓",
+    info: "i",
+    warning: "!",
   };
 
   return (
     <div
-      className={`${colors[toast.type]} px-4 py-3 rounded-lg shadow-lg flex items-start gap-2 animate-[slideIn_0.3s_ease-out]`}
+      className={`${colors[toast.type]} border-l-4 rounded-lg shadow-xl p-4 flex items-start gap-3 animate-[fadeIn_0.2s_ease-out]`}
     >
-      <span className="text-sm mt-0.5">{icons[toast.type]}</span>
-      <p className="text-sm flex-1 break-words">{toast.message}</p>
+      <div
+        className={`w-8 h-8 rounded-full ${iconColors[toast.type]} flex items-center justify-center text-sm font-bold shrink-0`}
+      >
+        {icons[toast.type]}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-stone-800">Atención</p>
+        <p className="text-sm text-stone-600 mt-0.5 break-words">{toast.message}</p>
+      </div>
     </div>
   );
 }
