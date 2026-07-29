@@ -1,9 +1,9 @@
 // filepath: src/pages/OnboardingPage.tsx
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { onboardingApi, type CompletarPerfilBody } from '../api/onboarding';
-import { duenosApi, type Provincia, type Ciudad } from '../api/duenos';
-import CloudinaryUploader from '../components/CloudinaryUploader';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { onboardingApi, type CompletarPerfilBody } from "../api/onboarding";
+import { duenosApi, type Provincia, type Ciudad } from "../api/duenos";
+import CloudinaryUploader from "../components/CloudinaryUploader";
 
 interface OnboardingData {
   tempToken: string;
@@ -14,14 +14,14 @@ interface OnboardingData {
 }
 
 const STEPS = [
-  { id: 1, title: 'Datos personales', description: 'Tu información básica' },
-  { id: 2, title: 'Foto de perfil', description: 'Una imagen para tu cuenta' },
+  { id: 1, title: "Datos personales", description: "Tu información básica" },
+  { id: 2, title: "Foto de perfil", description: "Una imagen para tu cuenta" },
   {
     id: 3,
-    title: 'Documentos',
-    description: 'Foto del DNI frente y dorso',
+    title: "Documentos",
+    description: "Foto del DNI frente y dorso",
   },
-  { id: 4, title: 'Confirmación', description: 'Revisá y enviá' },
+  { id: 4, title: "Confirmación", description: "Revisá y enviá" },
 ];
 
 export default function OnboardingPage() {
@@ -33,15 +33,15 @@ export default function OnboardingPage() {
 
   // Form data
   const [form, setForm] = useState<CompletarPerfilBody>({
-    nombreCompleto: '',
-    dni: '',
-    cuitCuil: '',
-    fechaNacimiento: '',
-    telefono: '',
-    direccion: '',
-    provinciaId: '',
-    ciudadId: '',
-    codigoPostal: '',
+    nombreCompleto: "",
+    dni: "",
+    cuitCuil: "",
+    fechaNacimiento: "",
+    telefono: "",
+    direccion: "",
+    provinciaId: "",
+    ciudadId: "",
+    codigoPostal: "",
   });
   const [urlAvatar, setUrlAvatar] = useState<string | null>(null);
   const [urlDniFrente, setUrlDniFrente] = useState<string | null>(null);
@@ -51,24 +51,66 @@ export default function OnboardingPage() {
   const [ciudades, setCiudades] = useState<Ciudad[]>([]);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem('restaurantgo_onboarding');
-    if (!raw) {
-      navigate('/login-dueno', { replace: true });
-      return;
+    let cancelled = false;
+
+    async function init() {
+      const raw = sessionStorage.getItem("restaurantgo_onboarding");
+      if (!raw) {
+        navigate("/login-dueno", { replace: true });
+        return;
+      }
+      const parsed = JSON.parse(raw) as OnboardingData;
+      if (cancelled) return;
+
+      setData(parsed);
+      setForm((f) => ({ ...f, nombreCompleto: parsed.nombre }));
+      setUrlAvatar(parsed.foto);
+
+      // cargar provincias
+      duenosApi
+        .getProvincias()
+        .then((p) => {
+          if (!cancelled) setProvincias(p);
+        })
+        .catch((err) => console.error("Error al cargar provincias:", err));
+
+      // Verificar en qué paso quedó el usuario
+      try {
+        const status = await onboardingApi.getStatus();
+        if (cancelled) return;
+        if (status.perfilCompleto && !status.documentosSubidos) {
+          setStep(3); // Falta subir documentos
+        } else if (status.perfilCompleto && status.documentosSubidos) {
+          setStep(4); // Ya completó todo
+        }
+        // Si perfilCompleto es false, queda en step 1 (default)
+      } catch {
+        // Si falla, arranca desde step 1
+      }
     }
-    const parsed = JSON.parse(raw) as OnboardingData;
-    setData(parsed);
-    setForm((f) => ({ ...f, nombreCompleto: parsed.nombre }));
-    setUrlAvatar(parsed.foto);
-    // cargar provincias
-    duenosApi.getProvincias().then(setProvincias).catch(() => {});
+
+    init();
+    return () => {
+      cancelled = true;
+    };
   }, [navigate]);
 
   async function handleProvinciaChange(pid: string) {
-    setForm((f) => ({ ...f, provinciaId: pid, ciudadId: '' }));
+    setForm((f) => ({ ...f, provinciaId: pid, ciudadId: "" }));
     if (pid) {
-      const c = await duenosApi.getCiudades(pid);
-      setCiudades(c);
+      try {
+        const c = await duenosApi.getCiudades(pid);
+        setCiudades(c);
+        if (c.length === 0) {
+          setError(
+            "No hay ciudades cargadas para esta provincia. Contactá al administrador.",
+          );
+        }
+      } catch (err) {
+        const msg = (err as Error).message;
+        setError(`Error al cargar ciudades: ${msg}`);
+        setCiudades([]);
+      }
     } else {
       setCiudades([]);
     }
@@ -99,7 +141,7 @@ export default function OnboardingPage() {
     e.preventDefault();
     setError(null);
     if (!urlDniFrente || !urlDniDorso) {
-      setError('Subí las dos fotos del DNI');
+      setError("Subí las dos fotos del DNI");
       return;
     }
     setSaving(true);
@@ -125,9 +167,7 @@ export default function OnboardingPage() {
       <div className="max-w-2xl mx-auto py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-stone-900">
-            🍽️ RestaurantGo
-          </h1>
+          <h1 className="text-3xl font-bold text-stone-900">🍽️ RestaurantGo</h1>
           <p className="text-stone-600 mt-1">
             Hola <strong>{data.nombre}</strong>, completá tu perfil para empezar
           </p>
@@ -140,11 +180,11 @@ export default function OnboardingPage() {
               <div
                 className={`w-8 h-8 rounded-full mx-auto flex items-center justify-center text-sm font-bold ${
                   step >= s.id
-                    ? 'bg-forest-600 text-white'
-                    : 'bg-stone-200 text-stone-500'
+                    ? "bg-forest-600 text-white"
+                    : "bg-stone-200 text-stone-500"
                 }`}
               >
-                {step > s.id ? '✓' : s.id}
+                {step > s.id ? "✓" : s.id}
               </div>
               <p className="text-[10px] text-stone-600 mt-1">{s.title}</p>
             </div>
@@ -182,7 +222,7 @@ export default function OnboardingPage() {
                 <Field label="CUIT/CUIL">
                   <input
                     className="input w-full"
-                    value={form.cuitCuil ?? ''}
+                    value={form.cuitCuil ?? ""}
                     onChange={(e) =>
                       setForm((f) => ({ ...f, cuitCuil: e.target.value }))
                     }
@@ -193,7 +233,7 @@ export default function OnboardingPage() {
                   <input
                     type="date"
                     className="input w-full"
-                    value={form.fechaNacimiento ?? ''}
+                    value={form.fechaNacimiento ?? ""}
                     onChange={(e) =>
                       setForm((f) => ({
                         ...f,
@@ -216,7 +256,7 @@ export default function OnboardingPage() {
                 <Field label="Código postal">
                   <input
                     className="input w-full"
-                    value={form.codigoPostal ?? ''}
+                    value={form.codigoPostal ?? ""}
                     onChange={(e) =>
                       setForm((f) => ({ ...f, codigoPostal: e.target.value }))
                     }
@@ -282,7 +322,7 @@ export default function OnboardingPage() {
                 disabled={saving}
                 className="btn-primary w-full"
               >
-                {saving ? 'Guardando...' : 'Continuar'}
+                {saving ? "Guardando..." : "Continuar"}
               </button>
             </form>
           )}
@@ -312,9 +352,7 @@ export default function OnboardingPage() {
 
           {step === 3 && (
             <form onSubmit={handleSubmitDocumentos} className="space-y-4">
-              <h2 className="font-semibold text-lg">
-                Documentos de identidad
-              </h2>
+              <h2 className="font-semibold text-lg">Documentos de identidad</h2>
               <p className="text-sm text-stone-600">
                 Necesitamos fotos claras del DNI frente y dorso para verificar
                 tu identidad.
@@ -353,7 +391,7 @@ export default function OnboardingPage() {
                   disabled={saving}
                   className="btn-primary flex-1"
                 >
-                  {saving ? 'Enviando...' : 'Enviar a verificación'}
+                  {saving ? "Enviando..." : "Enviar a verificación"}
                 </button>
               </div>
             </form>
@@ -364,7 +402,7 @@ export default function OnboardingPage() {
               <div className="text-6xl">✅</div>
               <h2 className="text-2xl font-bold text-stone-900">¡Listo!</h2>
               <p className="text-stone-600">
-                Tu cuenta está en revisión. Te avisaremos al mail{' '}
+                Tu cuenta está en revisión. Te avisaremos al mail{" "}
                 <strong>{data.email}</strong> cuando esté verificada.
               </p>
               <p className="text-sm text-stone-500">
@@ -373,8 +411,8 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => {
-                  sessionStorage.removeItem('restaurantgo_onboarding');
-                  navigate('/dueno/pendiente', { replace: true });
+                  sessionStorage.removeItem("restaurantgo_onboarding");
+                  navigate("/dueno/pendiente", { replace: true });
                 }}
                 className="btn-primary mt-4"
               >

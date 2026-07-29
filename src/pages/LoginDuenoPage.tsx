@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "../api/auth";
+import { onboardingApi } from "../api/onboarding";
 
 /**
  * Login específico para dueños con email y password.
- * - Si el email existe → JWT propio + redirige a /dueno
+ * - Si el email existe → JWT propio + verifica estado onboarding + redirige
  * - Si no existe → tempToken de onboarding + redirige a /onboarding/dueno
  */
 export default function LoginDuenoPage() {
@@ -21,8 +22,35 @@ export default function LoginDuenoPage() {
     setLoading(true);
     try {
       await authApi.login({ email, password });
+
+      // Verificar si el onboarding está completo
+      try {
+        const status = await onboardingApi.getStatus();
+        if (!status.perfilCompleto || !status.documentosSubidos) {
+          // Guardar datos en sessionStorage para que OnboardingPage funcione
+          sessionStorage.setItem(
+            "restaurantgo_onboarding",
+            JSON.stringify({
+              needsOnboarding: true,
+              email: status.correo,
+              nombre: status.nombreCompleto,
+            }),
+          );
+          navigate("/onboarding/dueno", { replace: true });
+          return;
+        }
+        if (
+          status.estadoVerificacion === "PENDIENTE" ||
+          status.estadoVerificacion === "EN_REVISION"
+        ) {
+          navigate("/dueno/pendiente", { replace: true });
+          return;
+        }
+      } catch {
+        // Si getStatus falla (ej: el usuario no es dueño), seguir flujo normal
+      }
+
       navigate("/dueno", { replace: true });
-      return;
     } catch (err) {
       const msg = (err as Error).message;
       setError(msg);
