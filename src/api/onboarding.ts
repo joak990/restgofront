@@ -45,13 +45,13 @@ onboardingClient.interceptors.request.use((config) => {
     const { tempToken } = JSON.parse(raw);
     if (tempToken) {
       config.headers.Authorization = `Bearer ${tempToken}`;
+      return config;
     }
-  } else {
-    // fallback: usar el JWT normal (caso dueño ya completó paso 1)
-    const token = localStorage.getItem('restaurantgo_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+  }
+  // fallback: usar el JWT normal (caso dueño ya completó paso 1 o re-login)
+  const token = localStorage.getItem('restaurantgo_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
