@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 /**
- * Muestra un popup de error estilo SweetAlert.
+ * Muestra un popup de error centrado en pantalla.
  */
 export function showError(message: string) {
   Swal.fire({
@@ -56,18 +56,4 @@ export async function showConfirm(message: string): Promise<boolean> {
     },
   });
   return result.isConfirmed;
-}
-
-// Listener de eventos custom para uso desde interceptores axios
-if (typeof window !== "undefined") {
-  window.addEventListener("toast", (e: Event) => {
-    const detail = (e as CustomEvent<{ message: string; type: "error" | "success" }>).detail;
-    if (detail?.message) {
-      if (detail.type === "success") {
-        showSuccess(detail.message);
-      } else {
-        showError(detail.message);
-      }
-    }
-  });
 }
