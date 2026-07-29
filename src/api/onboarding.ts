@@ -1,6 +1,7 @@
 // filepath: src/api/onboarding.ts
 import axios from 'axios';
 import { apiClient, auth } from './client';
+import { showError } from '../lib/toast';
 
 export interface CompletarPerfilBody {
   nombreCompleto: string;
@@ -56,18 +57,14 @@ onboardingClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Reutiliza el mismo manejo de errores que apiClient
+// Muestra SweetAlert en caso de error
 onboardingClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const backendMessage =
       error.response?.data?.message || error.response?.data?.error;
     if (backendMessage && typeof backendMessage === 'string') {
-      window.dispatchEvent(
-        new CustomEvent('toast', {
-          detail: { message: backendMessage, type: 'error' },
-        }),
-      );
+      showError(backendMessage);
     }
     return Promise.reject(error);
   },

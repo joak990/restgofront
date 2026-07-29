@@ -1,6 +1,7 @@
 // filepath: src/api/client.ts
 import axios from 'axios';
 import { verificationCache } from '../lib/verification-cache';
+import { showError } from '../lib/toast';
 
 const TOKEN_KEY = 'restaurantgo_token';
 const USER_KEY = 'restaurantgo_user';
@@ -28,7 +29,7 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor global de errores: extrae el mensaje del backend y dispara toast
+// Interceptor global de errores: extrae el mensaje del backend y muestra SweetAlert
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -36,33 +37,17 @@ apiClient.interceptors.response.use(
     const backendMessage =
       error.response?.data?.message || error.response?.data?.error;
 
-    // 401 sin token → no mostrar toast (es logout/redirect)
+    // 401 sin token → no mostrar alerta (es logout/redirect)
     if (status === 401 && !localStorage.getItem(TOKEN_KEY)) {
       return Promise.reject(error);
     }
 
-    // Extraer mensaje legible del backend
     if (backendMessage && typeof backendMessage === 'string') {
-      window.dispatchEvent(
-        new CustomEvent('toast', {
-          detail: { message: backendMessage, type: 'error' },
-        }),
-      );
+      showError(backendMessage);
     } else if (error.code === 'ERR_NETWORK') {
-      window.dispatchEvent(
-        new CustomEvent('toast', {
-          detail: {
-            message: 'Error de conexión. Verificá tu internet e intentá de nuevo.',
-            type: 'error',
-          },
-        }),
-      );
+      showError('Error de conexión. Verificá tu internet e intentá de nuevo.');
     } else {
-      window.dispatchEvent(
-        new CustomEvent('toast', {
-          detail: { message: `Error inesperado (${status ?? 'sin conexión'})`, type: 'error' },
-        }),
-      );
+      showError(`Error inesperado (${status ?? 'sin conexión'})`);
     }
 
     return Promise.reject(error);
