@@ -56,6 +56,23 @@ onboardingClient.interceptors.request.use((config) => {
   return config;
 });
 
+// Reutiliza el mismo manejo de errores que apiClient
+onboardingClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const backendMessage =
+      error.response?.data?.message || error.response?.data?.error;
+    if (backendMessage && typeof backendMessage === 'string') {
+      window.dispatchEvent(
+        new CustomEvent('toast', {
+          detail: { message: backendMessage, type: 'error' },
+        }),
+      );
+    }
+    return Promise.reject(error);
+  },
+);
+
 export const onboardingApi = {
   async completarPerfil(body: CompletarPerfilBody) {
     const { data } = await onboardingClient.post(
