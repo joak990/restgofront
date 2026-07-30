@@ -32,7 +32,7 @@ export default function TableNode({
   onSelect,
 }: Props) {
   const base =
-    "relative flex flex-col items-center justify-center select-none transition-all cursor-pointer overflow-hidden " +
+    "relative flex flex-col items-center justify-center select-none transition-all cursor-pointer overflow-visible " +
     STATUS_CLASSES[table.status];
 
   const style: React.CSSProperties = {
@@ -169,7 +169,7 @@ export default function TableNode({
         <span
           key={idx}
           aria-hidden
-          className="absolute rounded-full bg-cream-50 border border-cream-200"
+          className="absolute rounded-full bg-cream-50 border border-cream-200 shadow-sm"
           style={{ width: chairSize, height: chairSize, left: p.left, top: p.top }}
         />
       ))}
