@@ -128,6 +128,13 @@ export default function MisRestaurantesPage() {
           >
             🪑 Vista de mesa
           </Link>
+          <Link
+            to="/demo/clientes"
+            className="btn-ghost text-sm"
+            title="Demo guestbook clientes"
+          >
+            👥 Guestbook clientes
+          </Link>
           <button onClick={() => setShowModal(true)} className="btn-primary">
             + Nuevo restaurante
           </button>

@@ -11,6 +11,7 @@ import RestauranteInfoPage from "./components/RestauranteInfoPage";
 import HorariosPage from "./pages/HorariosPage";
 import MesasPage from "./pages/MesasPage";
 import ReservasPage from "./pages/ReservasPage";
+import ClientesPage from "./pages/ClientesPage";
 import PerfilPage from "./pages/PerfilPage";
 import ReservationsDemoPage from "./pages/ReservationsDemoPage";
 import TimelineDemoPage from "./pages/TimelineDemoPage";
@@ -45,11 +46,13 @@ export default function App() {
         <Route path="perfil" element={<PerfilPage />} />
         <Route path="restaurantes/:id" element={<RestauranteDetallePage />}>
           <Route index element={<RestauranteInfoPage />} />
+          <Route path="clientes" element={<ClientesPage />} />
         </Route>
         <Route path="restaurantes/:id/horarios" element={<HorariosPage />} />
         <Route path="restaurantes/:id/mesas" element={<MesasPage />} />
         <Route path="restaurantes/:id/reservas" element={<ReservasPage />} />
       </Route>
+      <Route path="/demo/clientes" element={<ClientesPage />} />
 
       <Route path="/" element={<Navigate to="/login-dueno" replace />} />
       <Route path="*" element={<Navigate to="/login-dueno" replace />} />
