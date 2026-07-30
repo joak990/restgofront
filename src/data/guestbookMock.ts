@@ -1,0 +1,133 @@
+export interface GuestbookEntry {
+  id: string;
+  nombre: string;
+  telefono: string;
+  correo: string;
+  compania?: string;
+  direccion: string;
+  ciudad: string;
+  birthday: string; // ISO date string (YYYY-MM-DD)
+  ultimaReserva: string;
+  ultimoEstado: string;
+  notas?: string;
+}
+
+export const guestbookMock: GuestbookEntry[] = [
+  {
+    id: "g-1",
+    nombre: "Becky Seger",
+    telefono: "(317) 372-6756",
+    correo: "BeckyHSeger@email.com",
+    compania: "",
+    direccion: "3603 Wilkinson Court",
+    ciudad: "South Burlington",
+    birthday: "1992-03-31",
+    ultimaReserva: "15 de julio · 2 personas",
+    ultimoEstado: "Confirmada",
+    notas: "Prefiere mesa cerca de la ventana",
+  },
+  {
+    id: "g-2",
+    nombre: "Christopher Frierson",
+    telefono: "(515) 322-4857",
+    correo: "christopher.frierson@email.com",
+    compania: "Frierson Consulting",
+    direccion: "512 Maple Street",
+    ciudad: "Des Moines",
+    birthday: "1988-06-17",
+    ultimaReserva: "12 de julio · 4 personas",
+    ultimoEstado: "Pendiente",
+    notas: "Mesa tranquila si es posible",
+  },
+  {
+    id: "g-3",
+    nombre: "Wendy Emerson",
+    telefono: "(401) 264-5774",
+    correo: "wendy.emerson@email.com",
+    compania: "Emerson Events",
+    direccion: "128 Ocean Avenue",
+    ciudad: "Providence",
+    birthday: "1990-11-05",
+    ultimaReserva: "9 de julio · 2 personas",
+    ultimoEstado: "Confirmada",
+    notas: "Solicita menú sin gluten",
+  },
+  {
+    id: "g-4",
+    nombre: "Elizabeth Grosvenor",
+    telefono: "(312) 762-6195",
+    correo: "elizabeth.grosvenor@email.com",
+    compania: "Grosvenor Agency",
+    direccion: "2200 W Monroe Street",
+    ciudad: "Chicago",
+    birthday: "1985-01-14",
+    ultimaReserva: "7 de julio · 3 personas",
+    ultimoEstado: "No asistió",
+    notas: "Usa estacionamiento VIP",
+  },
+  {
+    id: "g-5",
+    nombre: "Charlie Webb",
+    telefono: "(559) 679-4950",
+    correo: "charlie.webb@email.com",
+    compania: "Webb Studio",
+    direccion: "78 Pine Lane",
+    ciudad: "Fresno",
+    birthday: "1994-09-02",
+    ultimaReserva: "3 de julio · 5 personas",
+    ultimoEstado: "Confirmada",
+    notas: "Requiere silla alta",
+  },
+  {
+    id: "g-6",
+    nombre: "Suzanne Hernandez",
+    telefono: "(740) 391-7552",
+    correo: "suzanne.hernandez@email.com",
+    compania: "Hernandez Media",
+    direccion: "451 Elmwood Drive",
+    ciudad: "Columbus",
+    birthday: "1979-10-11",
+    ultimaReserva: "27 de junio · 6 personas",
+    ultimoEstado: "Confirmada",
+    notas: "Mesa accesible",
+  },
+  {
+    id: "g-7",
+    nombre: "Margaret Maldonado",
+    telefono: "(320) 644-7162",
+    correo: "margaret.maldonado@email.com",
+    compania: "Maldonado & Co.",
+    direccion: "920 Cedar Court",
+    ciudad: "St. Paul",
+    birthday: "1991-07-29",
+    ultimaReserva: "18 de junio · 2 personas",
+    ultimoEstado: "Cancelada",
+    notas: "Prefiere horario temprano",
+  },
+  {
+    id: "g-8",
+    nombre: "Donald Moore",
+    telefono: "(860) 338-6132",
+    correo: "donald.moore@email.com",
+    compania: "Moore Logistics",
+    direccion: "135 River Road",
+    ciudad: "Hartford",
+    birthday: "1982-05-08",
+    ultimaReserva: "22 de junio · 8 personas",
+    ultimoEstado: "Confirmada",
+    notas: "Mesa grande reservada",
+  },
+  {
+    id: "g-9",
+    nombre: "Leon Jackson",
+    telefono: "(201) 798-3866",
+    correo: "leon.jackson@email.com",
+    compania: "Jackson Design",
+    direccion: "23 Bay Street",
+    ciudad: "Jersey City",
+    birthday: "1987-03-19",
+    ultimaReserva: "15 de junio · 4 personas",
+    ultimoEstado: "Confirmada",
+    notas: "Solicita mesa afuera",
+  },
+];
