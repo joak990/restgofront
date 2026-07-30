@@ -134,7 +134,7 @@ export default function LoginDuenoPage() {
 
         <p className="text-center text-xs text-stone-500 mt-2">
           ¿No tenés cuenta?{" "}
-          <a href="/register" className="underline font-medium">
+          <a href="/register/duenos" className="underline font-medium">
             Creá tu cuenta
           </a>
         </p>

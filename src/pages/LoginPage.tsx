@@ -95,7 +95,7 @@ export default function LoginPage() {
 
           <p className="text-xs text-stone-500 text-center">
             ¿No tenés cuenta?{" "}
-            <a href="/register" className="underline font-medium">
+            <a href="/register/duenos" className="underline font-medium">
               Creá tu cuenta
             </a>
           </p>

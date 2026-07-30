@@ -158,7 +158,7 @@ export default function RegisterPage() {
 
           <p className="text-xs text-stone-500 text-center">
             ¿Ya tenés cuenta?{" "}
-            <a href="/login" className="underline">
+            <a href="/login-dueno" className="underline">
               Iniciá sesión
             </a>
           </p>
