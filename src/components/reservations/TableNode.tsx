@@ -49,65 +49,84 @@ export default function TableNode({
       top: number;
       width: number;
       height: number;
-      side: "top" | "right" | "bottom" | "left";
+      rotate: number;
     }> = [];
 
     if (cap <= 0) return chairs;
 
-    const base = Math.floor(cap / 4);
-    let rem = cap % 4;
-    const counts = [base, base, base, base];
-    for (let i = 0; i < rem; i++) counts[i]++;
+    if (table.forma === "round") {
+      const centerX = tableW / 2;
+      const centerY = tableH / 2;
+      const radius = Math.min(tableW, tableH) / 2 + 8;
+      const size = 12;
 
-    const chairShort = 14;
-    const chairLong = 26;
-    const padding = 6;
-
-    const add = (side: "top" | "right" | "bottom" | "left", count: number) => {
-      if (count === 0) return;
-      const available = side === "top" || side === "bottom" ? tableW - 2 * padding : tableH - 2 * padding;
-      for (let i = 0; i < count; i++) {
-        const t = (i + 1) / (count + 1);
-        if (side === "top") {
-          chairs.push({
-            left: padding + t * available - chairLong / 2,
-            top: -chairShort,
-            width: chairLong,
-            height: chairShort,
-            side,
-          });
-        } else if (side === "bottom") {
-          chairs.push({
-            left: padding + t * available - chairLong / 2,
-            top: tableH,
-            width: chairLong,
-            height: chairShort,
-            side,
-          });
-        } else if (side === "left") {
-          chairs.push({
-            left: -chairShort,
-            top: padding + t * available - chairLong / 2,
-            width: chairShort,
-            height: chairLong,
-            side,
-          });
-        } else {
-          chairs.push({
-            left: tableW,
-            top: padding + t * available - chairLong / 2,
-            width: chairShort,
-            height: chairLong,
-            side,
-          });
-        }
+      for (let i = 0; i < cap; i++) {
+        const angle = (i / cap) * Math.PI * 2;
+        chairs.push({
+          left: centerX + Math.cos(angle) * radius - size / 2,
+          top: centerY + Math.sin(angle) * radius - size / 2,
+          width: size,
+          height: size,
+          rotate: (angle * 180) / Math.PI,
+        });
       }
-    };
+    } else {
+      const base = Math.floor(cap / 4);
+      let rem = cap % 4;
+      const counts = [base, base, base, base];
+      for (let i = 0; i < rem; i++) counts[i]++;
 
-    add("top", counts[0]);
-    add("right", counts[1]);
-    add("bottom", counts[2]);
-    add("left", counts[3]);
+      const chairShort = 14;
+      const chairLong = 26;
+      const padding = 8;
+
+      const add = (side: "top" | "right" | "bottom" | "left", count: number) => {
+        if (count === 0) return;
+        const available = side === "top" || side === "bottom" ? tableW - 2 * padding : tableH - 2 * padding;
+        for (let i = 0; i < count; i++) {
+          const t = (i + 1) / (count + 1);
+          if (side === "top") {
+            chairs.push({
+              left: padding + t * available - chairLong / 2,
+              top: -chairShort,
+              width: chairLong,
+              height: chairShort,
+              rotate: 0,
+            });
+          } else if (side === "bottom") {
+            chairs.push({
+              left: padding + t * available - chairLong / 2,
+              top: tableH,
+              width: chairLong,
+              height: chairShort,
+              rotate: 0,
+            });
+          } else if (side === "left") {
+            chairs.push({
+              left: -chairShort,
+              top: padding + t * available - chairLong / 2,
+              width: chairShort,
+              height: chairLong,
+              rotate: 0,
+            });
+          } else {
+            chairs.push({
+              left: tableW,
+              top: padding + t * available - chairLong / 2,
+              width: chairShort,
+              height: chairLong,
+              rotate: 0,
+            });
+          }
+        }
+      };
+
+      add("top", counts[0]);
+      add("right", counts[1]);
+      add("bottom", counts[2]);
+      add("left", counts[3]);
+    }
+
     return chairs;
   }
 
@@ -173,8 +192,15 @@ export default function TableNode({
         <span
           key={idx}
           aria-hidden
-          className="absolute bg-cream-50 border border-cream-200 shadow-sm rounded-sm"
-          style={{ width: p.width, height: p.height, left: p.left, top: p.top }}
+          className="absolute bg-stone-300 border border-stone-400 shadow-sm rounded-sm"
+          style={{
+            width: p.width,
+            height: p.height,
+            left: p.left,
+            top: p.top,
+            transform: `rotate(${p.rotate}deg)`,
+            transformOrigin: "center center",
+          }}
         />
       ))}
 
