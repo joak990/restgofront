@@ -5,10 +5,12 @@
 // lógica compleja al header.
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   IcoCalendar,
   IcoChevronLeft,
   IcoChevronRight,
+  IcoClock,
   IcoReceipt,
   IcoSearch,
   IcoSettings,
@@ -88,6 +90,25 @@ export default function HeaderBar({
           <IcoChevronRight size={16} />
         </button>
       </div>
+
+      {/* Navegación entre vistas */}
+      <nav className="flex items-center gap-1">
+        <Link
+          to="/dueno"
+          className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-xs font-semibold text-cream-100 hover:bg-forest-900 hover:text-cream-50 transition"
+          title="Mi restaurante"
+        >
+          Mi restaurante
+        </Link>
+        <Link
+          to="/demo/timeline"
+          className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-xs font-semibold text-cream-100 hover:bg-forest-900 hover:text-cream-50 transition"
+          title="Cronograma del día"
+        >
+          <IcoClock size={14} />
+          Timeline
+        </Link>
+      </nav>
 
       <div className="flex-1" />
 

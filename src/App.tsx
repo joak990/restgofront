@@ -13,6 +13,7 @@ import MesasPage from "./pages/MesasPage";
 import ReservasPage from "./pages/ReservasPage";
 import PerfilPage from "./pages/PerfilPage";
 import ReservationsDemoPage from "./pages/ReservationsDemoPage";
+import TimelineDemoPage from "./pages/TimelineDemoPage";
 import OwnerLayout from "./layouts/OwnerLayout";
 import RequireDuenoVerificado from "./components/RequireDuenoVerificado";
 
@@ -26,6 +27,8 @@ export default function App() {
       <Route path="/dueno/pendiente" element={<PendientePage />} />
       {/* Demo: visualizador de reservaciones + 3 mesas con datos mockeados */}
       <Route path="/demo/reservas" element={<ReservationsDemoPage />} />
+      {/* Demo: timeline de reservas del día (cronograma por mesa y hora) */}
+      <Route path="/demo/timeline" element={<TimelineDemoPage />} />
 
       <Route
         path="/dueno"
