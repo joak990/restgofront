@@ -40,6 +40,75 @@ export default function TableNode({
     minHeight: `${table.alto * 32}px`,
   };
 
+  // Render chairs around the table based on capacity
+  const chairSize = 10; // px
+  const tableW = table.ancho * 32;
+  const tableH = table.alto * 32;
+
+  function getChairPositions(cap: number) {
+    const positions: { left: number; top: number }[] = [];
+    if (cap <= 0) return positions;
+
+    if (table.forma === "round") {
+      const cx = tableW / 2;
+      const cy = tableH / 2;
+      const radius = Math.min(tableW, tableH) / 2 + 8; // outside the table edge
+      for (let i = 0; i < cap; i++) {
+        const angle = (i / cap) * Math.PI * 2 - Math.PI / 2; // start at top
+        const left = cx + Math.cos(angle) * radius - chairSize / 2;
+        const top = cy + Math.sin(angle) * radius - chairSize / 2;
+        positions.push({ left, top });
+      }
+    } else {
+      // distribute chairs across four sides roughly equally
+      const base = Math.floor(cap / 4);
+      let rem = cap % 4;
+      const counts = [base, base, base, base];
+      for (let s = 0; s < rem; s++) counts[s]++;
+
+      const margin = 8;
+      // top
+      if (counts[0] > 0) {
+        for (let i = 0; i < counts[0]; i++) {
+          const t = (i + 1) / (counts[0] + 1);
+          const left = margin + t * (tableW - 2 * margin) - chairSize / 2;
+          const top = margin - chairSize / 2;
+          positions.push({ left, top });
+        }
+      }
+      // right
+      if (counts[1] > 0) {
+        for (let i = 0; i < counts[1]; i++) {
+          const t = (i + 1) / (counts[1] + 1);
+          const left = tableW - margin - chairSize / 2;
+          const top = margin + t * (tableH - 2 * margin) - chairSize / 2;
+          positions.push({ left, top });
+        }
+      }
+      // bottom
+      if (counts[2] > 0) {
+        for (let i = 0; i < counts[2]; i++) {
+          const t = (i + 1) / (counts[2] + 1);
+          const left = margin + t * (tableW - 2 * margin) - chairSize / 2;
+          const top = tableH - margin - chairSize / 2;
+          positions.push({ left, top });
+        }
+      }
+      // left
+      if (counts[3] > 0) {
+        for (let i = 0; i < counts[3]; i++) {
+          const t = (i + 1) / (counts[3] + 1);
+          const left = margin - chairSize / 2;
+          const top = margin + t * (tableH - 2 * margin) - chairSize / 2;
+          positions.push({ left, top });
+        }
+      }
+    }
+    return positions;
+  }
+
+  const chairPositions = getChairPositions(table.capacidad);
+
   const shapeClass = table.forma === "round" ? "rounded-full" : "rounded-xl";
 
   // Color del header de hora según status
@@ -94,6 +163,16 @@ export default function TableNode({
           {table.capacidad} pers
         </span>
       </div>
+
+      {/* Chairs */}
+      {chairPositions.map((p, idx) => (
+        <span
+          key={idx}
+          aria-hidden
+          className="absolute rounded-full bg-cream-50 border border-cream-200"
+          style={{ width: chairSize, height: chairSize, left: p.left, top: p.top }}
+        />
+      ))}
 
       {/* Footer: badge de reservas */}
       {typeof reservationCount === "number" && reservationCount > 0 && (
