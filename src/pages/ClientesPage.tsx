@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { guestbookMock, type GuestbookEntry } from "../data/guestbookMock";
+import { guestbookMock } from "../data/guestbookMock";
 
 export default function ClientesPage() {
   const { id } = useParams<{ id: string }>();
@@ -176,14 +176,7 @@ function InfoCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-3xl border border-cream-200 bg-white p-4">
-      <p className="text-xs uppercase tracking-[0.18em] text-stone-500">{label}</p>
-      <div className="mt-3">{children}</div>
-    </div>
-  );
-}
+
 
 function CardGroup({ label, value }: { label: string; value: string }) {
   return (
