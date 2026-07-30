@@ -22,7 +22,10 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/login-dueno" element={<LoginDuenoPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      {/* Registro exclusivo para dueños de restaurante */}
+      <Route path="/register/duenos" element={<RegisterPage />} />
+      {/* Compat: redirige el path viejo al nuevo */}
+      <Route path="/register" element={<Navigate to="/register/duenos" replace />} />
       <Route path="/onboarding/dueno" element={<OnboardingPage />} />
       <Route path="/dueno/pendiente" element={<PendientePage />} />
       {/* Demo: visualizador de reservaciones + 3 mesas con datos mockeados */}
