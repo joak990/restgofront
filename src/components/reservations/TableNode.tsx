@@ -59,9 +59,9 @@ export default function TableNode({
     const counts = [base, base, base, base];
     for (let i = 0; i < rem; i++) counts[i]++;
 
-    const chairShort = 6;
-    const chairLong = 16;
-    const padding = 8;
+    const chairShort = 14;
+    const chairLong = 26;
+    const padding = 6;
 
     const add = (side: "top" | "right" | "bottom" | "left", count: number) => {
       if (count === 0) return;
