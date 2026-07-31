@@ -295,7 +295,7 @@ export default function RestauranteInfoPage() {
                 to="mesas"
                 className="text-xs px-3 py-1.5 rounded-lg bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 transition"
               >
-                🪑 Mesas
+                Mesas
               </Link>
               <Link
                 to="reservas"
