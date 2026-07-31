@@ -6,10 +6,11 @@
 // Cada fila es minimal: hora · party · nombre · mesa asignada.
 
 import { useMemo, useState } from "react";
-import { mesasMock, type Reservation } from "../../data/reservationsMock";
+import type { FloorTable, Reservation } from "../../data/reservationsMock";
 import { IcoChevronDown, IcoSearch, IcoUsers, IcoUser } from "./Icons";
 
 interface Props {
+  mesas: FloorTable[];
   selectedMesaId?: string | null;
   selectedReservationId?: string | null;
   onSelectReservation?: (id: string) => void;
@@ -26,6 +27,7 @@ const QUICK_FILTERS: { label: string; value: number }[] = [
 ];
 
 export default function ReservationsSidebar({
+  mesas,
   selectedMesaId,
   selectedReservationId,
   onSelectReservation,
@@ -153,6 +155,7 @@ export default function ReservationsSidebar({
                   isSelected={selectedReservationId === r.id}
                   onClick={() => onSelectReservation?.(r.id)}
                   onAssign={() => onAssign(r.id)}
+                  mesas={mesas}
                 />
               ))}
             </div>
@@ -189,6 +192,7 @@ export default function ReservationsSidebar({
                   isSelected={selectedReservationId === r.id}
                   onClick={() => onSelectReservation?.(r.id)}
                   onAssign={() => onAssign(r.id)}
+                  mesas={mesas}
                 />
               ))}
             </div>
@@ -293,15 +297,17 @@ function ReservationRow({
   isSelected,
   onClick,
   onAssign,
+  mesas,
 }: {
   r: Reservation;
   isOnSelectedTable: boolean;
   isSelected: boolean;
   onClick: () => void;
   onAssign: () => void;
+  mesas: FloorTable[];
 }) {
   const placed = !!r.mesaId;
-  const mesaNumero = mesasMock.find((m) => m.id === r.mesaId)?.numero;
+  const mesaNumero = mesas.find((m: FloorTable) => m.id === r.mesaId)?.numero;
 
   return (
     <div

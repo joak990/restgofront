@@ -1,5 +1,7 @@
 // filepath: src/pages/RestauranteDetallePage.tsx
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useParams } from 'react-router-dom';
+import { duenosApi, type Restaurante } from '../api/duenos';
 
 const tabs = [
   { to: '', label: 'Info', icon: '📋' },
@@ -11,14 +13,35 @@ const tabs = [
 
 export default function RestauranteDetallePage() {
   const { id } = useParams();
+  const [restaurante, setRestaurante] = useState<Restaurante | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelado = false;
+    duenosApi
+      .getMisRestaurantes()
+      .then((lista) => {
+        if (!cancelado) {
+          setRestaurante(lista.find((r) => r.id === id) ?? null);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelado = true;
+    };
+  }, [id]);
 
   return (
     <div>
       <div className="mb-6 flex items-center gap-3">
         <span className="text-3xl">🍴</span>
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">Restaurante</h1>
-          <p className="text-xs text-stone-500 font-mono">{id}</p>
+          <h1 className="text-2xl font-bold text-stone-900">
+            {restaurante?.nombre ?? 'Restaurante'}
+          </h1>
+          {restaurante?.tipoCocina && (
+            <p className="text-xs text-stone-500">{restaurante.tipoCocina}</p>
+          )}
         </div>
       </div>
 

@@ -13,7 +13,7 @@ import MesasPage from "./pages/MesasPage";
 import ReservasPage from "./pages/ReservasPage";
 import ClientesPage from "./pages/ClientesPage";
 import PerfilPage from "./pages/PerfilPage";
-import ReservationsDemoPage from "./pages/ReservationsDemoPage";
+import VistaMesaPage from "./pages/VistaMesaPage";
 import TimelineDemoPage from "./pages/TimelineDemoPage";
 import OwnerLayout from "./layouts/OwnerLayout";
 import RequireDuenoVerificado from "./components/RequireDuenoVerificado";
@@ -29,10 +29,13 @@ export default function App() {
       <Route path="/register" element={<Navigate to="/register/duenos" replace />} />
       <Route path="/onboarding/dueno" element={<OnboardingPage />} />
       <Route path="/dueno/pendiente" element={<PendientePage />} />
-      {/* Demo: visualizador de reservaciones + 3 mesas con datos mockeados */}
-      <Route path="/demo/reservas" element={<ReservationsDemoPage />} />
       {/* Demo: timeline de reservas del día (cronograma por mesa y hora) */}
       <Route path="/demo/timeline" element={<TimelineDemoPage />} />
+      {/* Compat: la URL vieja /demo/reservas ahora redirige al dashboard */}
+      <Route
+        path="/demo/reservas"
+        element={<Navigate to="/dueno" replace />}
+      />
 
       <Route
         path="/dueno"
@@ -51,6 +54,10 @@ export default function App() {
         <Route path="restaurantes/:id/horarios" element={<HorariosPage />} />
         <Route path="restaurantes/:id/mesas" element={<MesasPage />} />
         <Route path="restaurantes/:id/reservas" element={<ReservasPage />} />
+        <Route
+          path="restaurantes/:restauranteId/vista-mesa"
+          element={<VistaMesaPage />}
+        />
       </Route>
       <Route path="/demo/clientes" element={<ClientesPage />} />
 

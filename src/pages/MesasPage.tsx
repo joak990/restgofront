@@ -217,7 +217,14 @@ export default function MesasPage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {data.map((m) => (
+          {[...data]
+            .sort((a, b) => {
+              const na = a.nombre?.match(/\d+/)?.[0];
+              const nb = b.nombre?.match(/\d+/)?.[0];
+              if (na && nb) return parseInt(na, 10) - parseInt(nb, 10);
+              return (a.nombre ?? "").localeCompare(b.nombre ?? "");
+            })
+            .map((m) => (
             <div
               key={m.id}
               className={`card p-4 transition hover:shadow-md ${

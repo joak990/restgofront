@@ -42,6 +42,24 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // 401 con token → sesión expirada, forzar logout
+    if (status === 401 && localStorage.getItem(TOKEN_KEY)) {
+      auth.clear();
+      // Solo redirigir si no estamos ya en login
+      if (!window.location.pathname.startsWith("/login")) {
+        window.location.href = "/login";
+      }
+      return Promise.reject(error);
+    }
+
+    // 403 con restauranteId ajeno (intento de IDOR) → redirigir al dashboard
+    if (status === 403 && window.location.pathname.includes("/vista-mesa")) {
+      if (!window.location.pathname.startsWith("/dueno")) {
+        window.location.href = "/dueno";
+      }
+      return Promise.reject(error);
+    }
+
     if (backendMessage && typeof backendMessage === 'string') {
       showError(backendMessage);
     } else if (error.code === 'ERR_NETWORK') {

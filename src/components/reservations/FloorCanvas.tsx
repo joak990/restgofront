@@ -1,18 +1,26 @@
 // filepath: src/components/reservations/FloorCanvas.tsx
-// Canvas del piso (3 mesas) con paleta RestaurantGo: fondo crema cálido
-// y grid en tono crema-300 para mantener calidez visual.
+// Canvas del piso: dibuja las mesas del restaurante activo (recibidas por props)
+// en un layout responsivo (flex-wrap) que entra SIEMPRE en el viewport sin
+// scroll horizontal, sin importar la cantidad de mesas.
 
-import { useMemo, useState } from "react";
-import { mesasMock, reservationsMock } from "../../data/reservationsMock";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { FloorTable, Reservation } from "../../data/reservationsMock";
 import TableNode from "./TableNode";
 import { IcoLayers } from "./Icons";
 
 interface Props {
+  mesas: FloorTable[];
+  reservas: Reservation[];
   selectedMesaId?: string | null;
   onSelectMesa?: (id: string | null) => void;
 }
 
-export default function FloorCanvas({ selectedMesaId, onSelectMesa }: Props) {
+export default function FloorCanvas({
+  mesas,
+  reservas,
+  selectedMesaId,
+  onSelectMesa,
+}: Props) {
   const [internalSelected, setInternalSelected] = useState<string | null>(null);
 
   const selectedId = selectedMesaId ?? internalSelected;
@@ -25,18 +33,62 @@ export default function FloorCanvas({ selectedMesaId, onSelectMesa }: Props) {
 
   const reservationsByMesa = useMemo(() => {
     const map: Record<string, number> = {};
-    for (const r of reservationsMock) {
+    for (const r of reservas) {
       if (r.mesaId) map[r.mesaId] = (map[r.mesaId] ?? 0) + 1;
     }
     return map;
+  }, [reservas]);
+
+  // ----- Calcular tamaño responsivo de cada mesa para que entren todas -----
+  // Cada mesa mide aprox. su capacidad + 2 unidades de grid;
+  // reservamos 1 unidad de gap. El grid completa con flex-wrap.
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    function measure() {
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      setContainerSize({ w: rect.width, h: rect.height });
+    }
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
-  const maxX = Math.max(...mesasMock.map((m) => m.x + m.ancho));
-  const maxY = Math.max(...mesasMock.map((m) => m.y + m.alto));
-  const width = (maxX + 3) * 32;
-  const height = (maxY + 3) * 32;
+  // Tamaño base de cada mesa en px (calculado para que entren todas)
+  const mesaTamanio = useMemo(() => {
+    if (mesas.length === 0) return { size: 72, gap: 14 };
+    const total = mesas.length;
+    const padding = 32;
+    const gap = 14;
+    const usableW = Math.max(200, containerSize.w - padding);
+    const usableH = Math.max(200, containerSize.h - padding);
+    // Empezamos con 6 columnas para mesas más chicas
+    let cols = Math.min(total, 6);
+    let size = Math.floor((usableW - gap * (cols - 1)) / cols);
+    const totalHeightForSize = (s: number) => {
+      const chair = Math.max(6, Math.round(s * 0.13));
+      return s + chair * 2 + 2;
+    };
+    let rows = Math.ceil(total / cols);
+    while (
+      rows > 1 &&
+      totalHeightForSize(size) * rows + gap * (rows - 1) > usableH &&
+      size > 40
+    ) {
+      cols = Math.min(total, cols + 1);
+      size = Math.floor((usableW - gap * (cols - 1)) / cols);
+      rows = Math.ceil(total / cols);
+    }
+    // Mesas más chicas: entre 48 y 100px
+    return { size: Math.max(48, Math.min(100, size)), gap };
+  }, [mesas.length, containerSize]);
 
-  const selected = mesasMock.find((m) => m.id === selectedId) ?? null;
+  const selected = mesas.find((m) => m.id === selectedId) ?? null;
 
   return (
     <div className="relative flex flex-col h-full bg-cream-50 text-stone-800 rounded-2xl overflow-hidden border border-cream-300 shadow-sm">
@@ -47,7 +99,7 @@ export default function FloorCanvas({ selectedMesaId, onSelectMesa }: Props) {
           <span className="font-semibold text-forest-800">Planta Principal</span>
           <span className="text-stone-400">·</span>
           <span className="text-xs text-stone-500">
-            {mesasMock.length} mesas
+            {mesas.length} mesa{mesas.length === 1 ? "" : "s"}
           </span>
         </div>
 
@@ -59,52 +111,29 @@ export default function FloorCanvas({ selectedMesaId, onSelectMesa }: Props) {
         </div>
       </div>
 
-      {/* Canvas scrolleable */}
-      <div className="relative flex-1 overflow-auto bg-cream-100">
+      {/* Canvas sin scroll: flex-wrap adapta las mesas al viewport */}
+      <div
+        ref={containerRef}
+        className="relative flex-1 overflow-hidden bg-cream-100 p-4"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(231, 210, 155, 0.45) 1px, transparent 1px), linear-gradient(to bottom, rgba(231, 210, 155, 0.45) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+        }}
+      >
         <div
-          className="relative mx-auto my-4"
-          style={{ width: `${width}px`, height: `${height}px` }}
+          className="w-full h-full flex flex-wrap items-center justify-center content-center"
+          style={{ gap: `${mesaTamanio.gap}px` }}
         >
-          {/* grid decorativo */}
-          <svg
-            className="absolute inset-0 pointer-events-none"
-            width={width}
-            height={height}
-          >
-            <defs>
-              <pattern
-                id="grid"
-                width="32"
-                height="32"
-                patternUnits="userSpaceOnUse"
-              >
-                <path
-                  d="M 32 0 L 0 0 0 32"
-                  fill="none"
-                  stroke="#e7d29b"
-                  strokeWidth="1"
-                />
-              </pattern>
-            </defs>
-            <rect width={width} height={height} fill="url(#grid)" />
-          </svg>
-
-          {mesasMock.map((m) => (
-            <div
+          {mesas.map((m) => (
+            <TableNode
               key={m.id}
-              className="absolute"
-              style={{
-                left: `${m.x * 32}px`,
-                top: `${m.y * 32}px`,
-              }}
-            >
-              <TableNode
-                table={m}
-                selected={selectedId === m.id}
-                reservationCount={reservationsByMesa[m.id]}
-                onSelect={handleSelect}
-              />
-            </div>
+              table={m}
+              size={mesaTamanio.size}
+              selected={selectedId === m.id}
+              reservationCount={reservationsByMesa[m.id]}
+              onSelect={handleSelect}
+            />
           ))}
         </div>
       </div>
@@ -113,9 +142,9 @@ export default function FloorCanvas({ selectedMesaId, onSelectMesa }: Props) {
       <div className="flex items-center justify-between gap-2 px-3 py-2 border-t border-cream-300 bg-cream-100">
         <div className="flex items-center gap-2 text-xs text-stone-500">
           <span>
-            {mesasMock.length} mesas · capacidad total{" "}
+            {mesas.length} mesa{mesas.length === 1 ? "" : "s"} · capacidad total{" "}
             <strong className="text-forest-800">
-              {mesasMock.reduce((a, m) => a + m.capacidad, 0)}
+              {mesas.reduce((a, m) => a + m.capacidad, 0)}
             </strong>{" "}
             pers
           </span>

@@ -1,15 +1,35 @@
 // filepath: src/layouts/OwnerLayout.tsx
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { authApi } from "../api/auth";
+import { duenosApi, type Restaurante } from "../api/duenos";
 
 export default function OwnerLayout() {
   const navigate = useNavigate();
   const user = authApi.currentUser();
+  const [primerResto, setPrimerResto] = useState<Restaurante | null>(null);
+
+  useEffect(() => {
+    let cancelado = false;
+    duenosApi
+      .getMisRestaurantes()
+      .then((lista) => {
+        if (!cancelado && lista.length > 0) setPrimerResto(lista[0]);
+      })
+      .catch(() => {});
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
   const handleLogout = async () => {
     await authApi.logout();
     navigate("/login");
   };
+
+  const vistasHref = primerResto
+    ? `/dueno/restaurantes/${primerResto.id}/vista-mesa`
+    : "/dueno";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-cream-100">
@@ -55,6 +75,49 @@ export default function OwnerLayout() {
             </button>
           </div>
         </div>
+
+        {/* Barra de navegación */}
+        <nav className="max-w-6xl mx-auto px-4 sm:px-6 pb-2 -mt-1 flex items-center gap-1 text-sm">
+          <NavLink
+            to="/dueno"
+            end
+            className={({ isActive }) =>
+              `px-3 py-1.5 rounded-md font-medium transition ${
+                isActive
+                  ? "bg-forest-100 text-forest-800"
+                  : "text-stone-600 hover:bg-cream-100 hover:text-stone-800"
+              }`
+            }
+          >
+            🏠 Mis restaurantes
+          </NavLink>
+          {primerResto && (
+            <NavLink
+              to={vistasHref}
+              className={({ isActive }) =>
+                `px-3 py-1.5 rounded-md font-medium transition ${
+                  isActive
+                    ? "bg-forest-100 text-forest-800"
+                    : "text-stone-600 hover:bg-cream-100 hover:text-stone-800"
+                }`
+              }
+            >
+              🪑 Vista de mesa
+            </NavLink>
+          )}
+          <NavLink
+            to="/demo/clientes"
+            className={({ isActive }) =>
+              `px-3 py-1.5 rounded-md font-medium transition ${
+                isActive
+                  ? "bg-forest-100 text-forest-800"
+                  : "text-stone-600 hover:bg-cream-100 hover:text-stone-800"
+              }`
+            }
+          >
+            👥 Guestbook clientes
+          </NavLink>
+        </nav>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
