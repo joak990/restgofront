@@ -58,7 +58,6 @@ export default function RestauranteDetallePage() {
                 }`
               }
             >
-              <span>{t.icon}</span>
               {t.label}
             </NavLink>
           ))}
