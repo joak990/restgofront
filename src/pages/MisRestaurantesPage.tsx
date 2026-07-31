@@ -121,20 +121,6 @@ export default function MisRestaurantesPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            to="/demo/reservas"
-            className="btn-ghost text-sm"
-            title="Demo con datos mockeados"
-          >
-            🪑 Vista de mesa
-          </Link>
-          <Link
-            to="/demo/clientes"
-            className="btn-ghost text-sm"
-            title="Demo guestbook clientes"
-          >
-            👥 Guestbook clientes
-          </Link>
           <button onClick={() => setShowModal(true)} className="btn-primary">
             + Nuevo restaurante
           </button>
@@ -155,33 +141,46 @@ export default function MisRestaurantesPage() {
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {data.map((r) => (
-            <Link
+            <div
               key={r.id}
-              to={`/dueno/restaurantes/${r.id}`}
               className="card hover:shadow-md hover:-translate-y-0.5 transition-all group"
             >
-              <div className="h-32 bg-gradient-to-br from-forest-500 via-forest-600 to-forest-800 flex items-center justify-center text-6xl group-hover:scale-110 transition-transform">
-                {emojiFor(r.nombre)}
-              </div>
-              <div className="p-4">
-                <h2 className="font-semibold text-lg text-stone-900">{r.nombre}</h2>
-                {r.direccion && (
-                  <p className="text-sm text-stone-500 mt-0.5 line-clamp-2">
-                    📍 {r.direccion}
-                  </p>
-                )}
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {r.verificado ? (
-                    <span className="pill-green">✓ Verificado</span>
-                  ) : (
-                    <span className="pill-amber">⏳ Pendiente</span>
-                  )}
-                  <span className={r.activo ? 'pill-blue' : 'pill-gray'}>
-                    {r.activo ? '● Activo' : '○ Inactivo'}
-                  </span>
+              <Link
+                to={`/dueno/restaurantes/${r.id}`}
+                className="block"
+              >
+                <div className="h-32 bg-gradient-to-br from-forest-500 via-forest-600 to-forest-800 flex items-center justify-center text-6xl group-hover:scale-110 transition-transform">
+                  {emojiFor(r.nombre)}
                 </div>
+                <div className="p-4">
+                  <h2 className="font-semibold text-lg text-stone-900">{r.nombre}</h2>
+                  {r.direccion && (
+                    <p className="text-sm text-stone-500 mt-0.5 line-clamp-2">
+                      📍 {r.direccion}
+                    </p>
+                  )}
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {r.verificado ? (
+                      <span className="pill-green">✓ Verificado</span>
+                    ) : (
+                      <span className="pill-amber">⏳ Pendiente</span>
+                    )}
+                    <span className={r.activo ? 'pill-blue' : 'pill-gray'}>
+                      {r.activo ? '● Activo' : '○ Inactivo'}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+              <div className="px-4 pb-4">
+                <Link
+                  to={`/dueno/restaurantes/${r.id}/vista-mesa`}
+                  className="btn-ghost text-xs w-full inline-flex items-center justify-center gap-2 py-2"
+                  title="Abrir vista de mesa"
+                >
+                  🪑 Abrir vista de mesa
+                </Link>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}

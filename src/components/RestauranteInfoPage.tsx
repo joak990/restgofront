@@ -211,12 +211,6 @@ export default function RestauranteInfoPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         {/* Info card */}
         <div className="card p-5 space-y-3">
-          <div>
-            <h4 className="text-xl font-bold text-stone-900">{restaurante.nombre}</h4>
-            {restaurante.tipoCocina && (
-              <span className="pill-amber mt-1">{restaurante.tipoCocina}</span>
-            )}
-          </div>
           {restaurante.descripcion && (
             <p className="text-sm text-stone-600">{restaurante.descripcion}</p>
           )}
