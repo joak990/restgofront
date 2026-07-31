@@ -36,7 +36,7 @@ export default function ClientesPage() {
 
   return (
     <div className="bg-cream-50 min-h-screen pb-8">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-6 py-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-forest-700 font-semibold">

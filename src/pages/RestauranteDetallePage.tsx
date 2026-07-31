@@ -32,7 +32,7 @@ export default function RestauranteDetallePage() {
   }, [id]);
 
   return (
-    <div>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-6 flex items-center gap-3">
         <span className="text-3xl">🍴</span>
         <div>

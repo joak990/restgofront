@@ -30,7 +30,16 @@ export default function App() {
       <Route path="/onboarding/dueno" element={<OnboardingPage />} />
       <Route path="/dueno/pendiente" element={<PendientePage />} />
       {/* Demo: timeline de reservas del día (cronograma por mesa y hora) */}
-      <Route path="/demo/timeline" element={<TimelineDemoPage />} />
+      <Route
+        path="/demo/timeline"
+        element={
+          <RequireDuenoVerificado>
+            <OwnerLayout />
+          </RequireDuenoVerificado>
+        }
+      >
+        <Route index element={<TimelineDemoPage />} />
+      </Route>
       {/* Compat: la URL vieja /demo/reservas ahora redirige al dashboard */}
       <Route
         path="/demo/reservas"
@@ -59,7 +68,16 @@ export default function App() {
           element={<VistaMesaPage />}
         />
       </Route>
-      <Route path="/demo/clientes" element={<ClientesPage />} />
+      <Route
+        path="/demo/clientes"
+        element={
+          <RequireDuenoVerificado>
+            <OwnerLayout />
+          </RequireDuenoVerificado>
+        }
+      >
+        <Route index element={<ClientesPage />} />
+      </Route>
 
       <Route path="/" element={<Navigate to="/login-dueno" replace />} />
       <Route path="*" element={<Navigate to="/login-dueno" replace />} />

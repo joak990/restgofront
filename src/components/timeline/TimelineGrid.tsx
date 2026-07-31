@@ -126,7 +126,7 @@ export default function TimelineGrid({
         <div
           ref={innerRef}
           className="relative select-none flex flex-col min-h-full"
-          style={{ width: `${COL_MESA + LANE_WIDTH}px` }}
+          style={{ width: `${COL_MESA + LANE_WIDTH + PX_POR_HORA}px` }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -146,9 +146,14 @@ export default function TimelineGrid({
                 Mesa
               </span>
             </div>
-            <div className="relative" style={{ width: `${LANE_WIDTH}px` }}>
-              {MARCAS.map((t) => {
+            <div className="relative" style={{ width: `${LANE_WIDTH + PX_POR_HORA}px` }}>
+              {MARCAS.map((t, i) => {
                 const cadaHora = Number.isInteger(t);
+                // Última columna: ancho proporcional al espacio restante
+                const esUltima = i === MARCAS.length - 1;
+                const anchoCol = esUltima
+                  ? LANE_WIDTH + PX_POR_HORA - (t - HORA_INICIO) * PX_POR_HORA
+                  : PX_POR_HORA;
                 return (
                   <div
                     key={t}
@@ -157,7 +162,7 @@ export default function TimelineGrid({
                     }`}
                     style={{
                       left: `${(t - HORA_INICIO) * PX_POR_HORA}px`,
-                      width: `${PX_POR_HORA}px`,
+                      width: `${anchoCol}px`,
                     }}
                   >
                     <span
@@ -273,7 +278,7 @@ function FilaMesa({
       </div>
 
       {/* Calle de reservas: altura fija compacta (igual para N mesas). */}
-      <div className="relative h-[52px]" style={{ width: `${LANE_WIDTH}px` }}>
+      <div className="relative h-[52px]" style={{ width: `${LANE_WIDTH + PX_POR_HORA}px` }}>
         {/* líneas verticales de hora */}
         {MARCAS.map((t) => (
           <div

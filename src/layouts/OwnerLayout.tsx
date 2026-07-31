@@ -33,8 +33,8 @@ export default function OwnerLayout() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-cream-100">
-      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-cream-200 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-cream-200 sticky top-0 z-30">
+        <div className="max-w-full mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <Link to="/dueno" className="flex items-center gap-2.5 group">
             <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-forest-600 to-forest-800 text-cream-50 shadow-sm group-hover:scale-105 transition-transform">
               <span className="text-lg">🍽️</span>
@@ -106,6 +106,18 @@ export default function OwnerLayout() {
             </NavLink>
           )}
           <NavLink
+            to="/demo/timeline"
+            className={({ isActive }) =>
+              `px-3 py-1.5 rounded-md font-medium transition ${
+                isActive
+                  ? "bg-forest-100 text-forest-800"
+                  : "text-stone-600 hover:bg-cream-100 hover:text-stone-800"
+              }`
+            }
+          >
+            Agenda del día
+          </NavLink>
+          <NavLink
             to="/demo/clientes"
             className={({ isActive }) =>
               `px-3 py-1.5 rounded-md font-medium transition ${
@@ -120,7 +132,7 @@ export default function OwnerLayout() {
         </nav>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <main className="w-full">
         <Outlet />
       </main>
     </div>
