@@ -427,8 +427,8 @@ export default function PerfilPage() {
                       )}
                     </div>
                     <div className="flex items-center gap-3 mt-2 text-xs text-stone-500">
-                      <span>🪑 {r._count.mesas} mesas</span>
-                      <span>🍽️ {r._count.platos} platos</span>
+                      <span>{r._count.mesas} mesas</span>
+                      <span>{r._count.platos} platos</span>
                     </div>
                     {r.nivelSuscripcion === "GRATIS" && (
                       <button

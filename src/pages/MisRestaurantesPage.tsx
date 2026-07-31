@@ -177,7 +177,7 @@ export default function MisRestaurantesPage() {
                   className="btn-ghost text-xs w-full inline-flex items-center justify-center gap-2 py-2"
                   title="Abrir vista de mesa"
                 >
-                  🪑 Abrir vista de mesa
+                  Abrir vista de mesa
                 </Link>
               </div>
             </div>

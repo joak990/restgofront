@@ -472,19 +472,19 @@ export default function ReservasPage() {
                                   </div>
                                   <div className="flex items-center gap-3 text-xs text-stone-500 mt-1 flex-wrap">
                                     <span>
-                                      🕐 {r.horaReserva} — {r.horaFin}
+                                      {r.horaReserva} — {r.horaFin}
                                     </span>
                                     <span>
-                                      👥 {r.cantidadPersonas} personas
+                                      {r.cantidadPersonas} personas
                                     </span>
                                     {r.mesa && (
                                       <span>
-                                        🪑 {r.mesa.nombre ?? "Mesa sin nombre"}
+                                        {r.mesa.nombre ?? "Mesa sin nombre"}
                                       </span>
                                     )}
-                                    {telefono && <span>📞 {telefono}</span>}
+                                    {telefono && <span>{telefono}</span>}
                                     {r.cliente && (
-                                      <span>✉️ {r.cliente.correo}</span>
+                                      <span>{r.cliente.correo}</span>
                                     )}
                                   </div>
                                 </div>

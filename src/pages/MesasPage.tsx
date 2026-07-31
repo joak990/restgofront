@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { duenosApi, type Mesa } from '../api/duenos';
 
-const CAPACITY_EMOJI = ['🪑', '👤', '👥', '👨‍👩‍👧', '👨‍👩‍👧‍👦', '👨‍👩‍👧‍👦‍👦'];
+const CAPACITY_EMOJI = ['', '', '', '', '', ''];
 
 interface MesaForm {
   nombre: string;
@@ -118,7 +118,7 @@ export default function MesasPage() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-stone-900 flex items-center gap-2">
-          <span>🪑</span> Mesas
+          Mesas
         </h2>
         <div className="flex items-center gap-3">
           <span className="text-sm text-stone-500">
@@ -206,7 +206,7 @@ export default function MesasPage() {
 
       {data.length === 0 && !showForm ? (
         <div className="card p-8 text-center bg-cream-100/70 border-dashed">
-          <div className="text-4xl mb-2">🪑</div>
+          
           <p className="text-stone-700 font-medium">Sin mesas cargadas</p>
           <p className="text-xs text-stone-500 mt-1">
             Creá mesas para que los clientes puedan reservar.

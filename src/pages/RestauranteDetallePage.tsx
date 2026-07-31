@@ -4,11 +4,11 @@ import { NavLink, Outlet, useParams } from 'react-router-dom';
 import { duenosApi, type Restaurante } from '../api/duenos';
 
 const tabs = [
-  { to: '', label: 'Info', icon: '📋' },
-  { to: 'horarios', label: 'Horarios', icon: '🕐' },
-  { to: 'mesas', label: 'Mesas', icon: '🪑' },
-  { to: 'reservas', label: 'Reservas', icon: '📅' },
-  { to: 'clientes', label: 'Clientes', icon: '👥' },
+  { to: '', label: 'Info' },
+  { to: 'horarios', label: 'Horarios' },
+  { to: 'mesas', label: 'Mesas' },
+  { to: 'reservas', label: 'Reservas' },
+  { to: 'clientes', label: 'Clientes' },
 ];
 
 export default function RestauranteDetallePage() {
@@ -58,7 +58,6 @@ export default function RestauranteDetallePage() {
                 }`
               }
             >
-              <span>{t.icon}</span>
               {t.label}
             </NavLink>
           ))}

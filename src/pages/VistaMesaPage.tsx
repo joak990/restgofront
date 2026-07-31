@@ -215,9 +215,7 @@ function SinMesas({
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-b from-cream-100 to-cream-200 p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-cream-300 p-8 text-center">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-forest-100 flex items-center justify-center text-3xl">
-          🪑
-        </div>
+        
         <h2 className="text-xl font-bold text-forest-800 mb-2">
           {restauranteNombre} aún no tiene mesas
         </h2>

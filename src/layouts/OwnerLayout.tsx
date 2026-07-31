@@ -89,7 +89,7 @@ export default function OwnerLayout() {
               }`
             }
           >
-            🏠 Mis restaurantes
+            Mis restaurantes
           </NavLink>
           {primerResto && (
             <NavLink
@@ -102,7 +102,7 @@ export default function OwnerLayout() {
                 }`
               }
             >
-              🪑 Vista de mesa
+              Vista de mesa
             </NavLink>
           )}
           <NavLink
@@ -115,7 +115,7 @@ export default function OwnerLayout() {
               }`
             }
           >
-            👥 Guestbook clientes
+            Guestbook clientes
           </NavLink>
         </nav>
       </header>
