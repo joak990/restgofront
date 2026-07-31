@@ -81,7 +81,6 @@ export default function ReservationBlock({
           <span className="opacity-60">·</span>
           <IcoUsers size={10} className="shrink-0" />
           <span className="font-semibold">{reserva.partySize}</span>
-          {reserva.tag && <span className="ml-auto shrink-0">{reserva.tag}</span>}
         </div>
       </div>
     </button>

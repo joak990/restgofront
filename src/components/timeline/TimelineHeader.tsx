@@ -2,13 +2,10 @@
 // Header de la vista timeline: navegación de fecha + leyenda de estados.
 // Paleta RestaurantGo (forest + cream).
 
-import { Link } from "react-router-dom";
 import {
   IcoCalendar,
   IcoChevronLeft,
   IcoChevronRight,
-  IcoHome,
-  IcoLayers,
   IcoUser,
 } from "../reservations/Icons";
 
@@ -49,35 +46,13 @@ export default function TimelineHeader({
         </div>
         <div className="hidden sm:flex flex-col leading-tight">
           <span className="text-xs uppercase tracking-wider text-cream-200">
-            Demo · Agenda del día
+Agenda del día
           </span>
           <span className="text-sm font-semibold text-cream-50">
             RestaurantGo
           </span>
         </div>
       </div>
-
-      <div className="hidden md:block h-8 w-px bg-forest-600 mx-1" />
-
-      {/* Navegación entre vistas */}
-      <nav className="flex items-center gap-1">
-        <Link
-          to="/dueno"
-          className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-xs font-semibold text-cream-100 hover:bg-forest-900 hover:text-cream-50 transition"
-          title="Mi restaurante"
-        >
-          <IcoHome size={14} />
-          <span className="hidden lg:inline">Mi restaurante</span>
-        </Link>
-        <Link
-          to="/demo/reservas"
-          className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-xs font-semibold text-cream-100 hover:bg-forest-900 hover:text-cream-50 transition"
-          title="Vista de mesas"
-        >
-          <IcoLayers size={14} />
-          <span className="hidden lg:inline">Reservas</span>
-        </Link>
-      </nav>
 
       <div className="hidden md:block h-8 w-px bg-forest-600 mx-1" />
 

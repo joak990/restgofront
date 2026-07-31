@@ -83,7 +83,7 @@ export default function NotificationsBell({
           <div className="max-h-80 overflow-y-auto">
             {reservations.length === 0 ? (
               <div className="text-center text-xs text-stone-500 py-8">
-                No hay reservas sin asignar 🎉
+                No hay reservas sin asignar
               </div>
             ) : (
               reservations.map((r) => (

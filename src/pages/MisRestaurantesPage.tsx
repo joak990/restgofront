@@ -112,7 +112,7 @@ export default function MisRestaurantesPage() {
     );
 
   return (
-    <div>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-stone-900">Mis restaurantes</h1>

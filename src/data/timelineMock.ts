@@ -51,7 +51,7 @@ export interface TimelineReservation {
 //   12:00 -> 23:30, con un gap "Cerrado" entre el fin del almuerzo y el
 //   inicio de la cena.
 export const HORA_INICIO = 12;
-export const HORA_FIN = 23.5;
+export const HORA_FIN = 23;
 // Ventana entre turnos (se renderiza como zona "Cerrado")
 export const GAP_INICIO = 15.5; // fin del almuerzo
 export const GAP_FIN = 20.0; // inicio de la cena

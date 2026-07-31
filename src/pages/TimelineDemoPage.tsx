@@ -46,7 +46,7 @@ export default function TimelineDemoPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-b from-cream-100 via-cream-50 to-cream-200 dark:from-stone-900 dark:via-stone-900 dark:to-black">
+    <div className="fixed inset-0 top-[120px] flex flex-col bg-gradient-to-b from-cream-100 via-cream-50 to-cream-200 dark:from-stone-900 dark:via-stone-900 dark:to-black">
       <TimelineHeader
         fecha={fecha}
         esHoy={esHoy}
@@ -57,7 +57,7 @@ export default function TimelineDemoPage() {
         onToggleDark={() => setDark((v) => !v)}
       />
 
-      <main className="flex-1 grid p-3 min-h-0">
+      <main className="flex-1 grid p-3 min-h-0 overflow-x-auto overflow-y-auto">
         <TimelineGrid
           reservas={reservasTimelineMock}
           selectedReservationId={selectedReservationId}

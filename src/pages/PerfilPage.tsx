@@ -148,7 +148,7 @@ export default function PerfilPage() {
   const inicial = perfil.nombreCompleto.charAt(0).toUpperCase();
 
   return (
-    <div>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-stone-900 flex items-center gap-2">
