@@ -10,6 +10,7 @@ import RestauranteDetallePage from "./pages/RestauranteDetallePage";
 import RestauranteInfoPage from "./components/RestauranteInfoPage";
 import HorariosPage from "./pages/HorariosPage";
 import MesasPage from "./pages/MesasPage";
+import CartaPage from "./pages/CartaPage";
 import ReservasPage from "./pages/ReservasPage";
 import ClientesPage from "./pages/ClientesPage";
 import PerfilPage from "./pages/PerfilPage";
@@ -56,12 +57,18 @@ export default function App() {
       >
         <Route index element={<MisRestaurantesPage />} />
         <Route path="perfil" element={<PerfilPage />} />
+        <Route path="carta" element={<CartaPage />} />
+        <Route path="restaurantes/:id" element={<RestauranteDetallePage />}>
+          <Route index element={<RestauranteInfoPage />} />
+          <Route path="clientes" element={<ClientesPage />} />
+        </Route>
         <Route path="restaurantes/:id" element={<RestauranteDetallePage />}>
           <Route index element={<RestauranteInfoPage />} />
           <Route path="clientes" element={<ClientesPage />} />
         </Route>
         <Route path="restaurantes/:id/horarios" element={<HorariosPage />} />
         <Route path="restaurantes/:id/mesas" element={<MesasPage />} />
+        <Route path="restaurantes/:id/carta" element={<CartaPage />} />
         <Route path="restaurantes/:id/reservas" element={<ReservasPage />} />
         <Route
           path="restaurantes/:restauranteId/vista-mesa"

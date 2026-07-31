@@ -1,11 +1,12 @@
 // filepath: src/layouts/OwnerLayout.tsx
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { authApi } from "../api/auth";
 import { duenosApi, type Restaurante } from "../api/duenos";
 
 export default function OwnerLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const user = authApi.currentUser();
   const [primerResto, setPrimerResto] = useState<Restaurante | null>(null);
 
@@ -30,6 +31,7 @@ export default function OwnerLayout() {
   const vistasHref = primerResto
     ? `/dueno/restaurantes/${primerResto.id}/vista-mesa`
     : "/dueno";
+  const cartaHref = "/dueno/carta";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-cream-100">
@@ -103,6 +105,25 @@ export default function OwnerLayout() {
               }
             >
               Vista de mesa
+            </NavLink>
+          )}
+          {primerResto && (
+            <NavLink
+              to={cartaHref}
+              className={() => {
+                const activo =
+                  location.pathname === cartaHref ||
+                  /^\/dueno\/restaurantes\/[^/]+\/carta\/?$/.test(
+                    location.pathname,
+                  );
+                return `px-3 py-1.5 rounded-md font-medium transition ${
+                  activo
+                    ? "bg-forest-100 text-forest-800"
+                    : "text-stone-600 hover:bg-cream-100 hover:text-stone-800"
+                }`;
+              }}
+            >
+              Carta
             </NavLink>
           )}
           <NavLink

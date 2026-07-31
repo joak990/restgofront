@@ -39,6 +39,17 @@ export interface Mesa {
   activo: boolean;
 }
 
+export interface Plato {
+  id: string;
+  restauranteId: string;
+  nombre: string;
+  descripcion: string | null;
+  precio: number; // precio en centavos
+  categoria: string;
+  disponible: boolean;
+  urlImagen?: string | null;
+}
+
 export type EstadoReserva =
   "PENDIENTE" | "CONFIRMADA" | "CANCELADA" | "NO_ASISTIO" | "COMPLETADA";
 
@@ -291,6 +302,40 @@ export const duenosApi = {
   async deleteMesa(restauranteId: string, mesaId: string): Promise<void> {
     await apiClient.delete(
       `/duenos/restaurantes/${restauranteId}/mesas/${mesaId}`,
+    );
+  },
+
+  // Platos (carta)
+  async getPlatos(restauranteId: string): Promise<Plato[]> {
+    const { data } = await apiClient.get<Plato[]>(
+      `/duenos/restaurantes/${restauranteId}/platos`,
+    );
+    return data;
+  },
+  async createPlato(
+    restauranteId: string,
+    body: Omit<Plato, "id" | "restauranteId">,
+  ): Promise<Plato> {
+    const { data } = await apiClient.post<Plato>(
+      `/duenos/restaurantes/${restauranteId}/platos`,
+      body,
+    );
+    return data;
+  },
+  async updatePlato(
+    restauranteId: string,
+    platoId: string,
+    body: Partial<Omit<Plato, "id" | "restauranteId">>,
+  ): Promise<Plato> {
+    const { data } = await apiClient.patch<Plato>(
+      `/duenos/restaurantes/${restauranteId}/platos/${platoId}`,
+      body,
+    );
+    return data;
+  },
+  async deletePlato(restauranteId: string, platoId: string): Promise<void> {
+    await apiClient.delete(
+      `/duenos/restaurantes/${restauranteId}/platos/${platoId}`,
     );
   },
 
