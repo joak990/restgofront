@@ -24,6 +24,7 @@ import AdminRestaurantesPage from "./pages/AdminRestaurantesPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import RequireDuenoVerificado from "./components/RequireDuenoVerificado";
 import RequireAdmin from "./components/RequireAdmin";
+import TelegramReviewDuenoPage from "./pages/TelegramReviewDuenoPage";
 
 export default function App() {
   return (
@@ -33,7 +34,10 @@ export default function App() {
       {/* Registro exclusivo para dueños de restaurante */}
       <Route path="/register/duenos" element={<RegisterPage />} />
       {/* Compat: redirige el path viejo al nuevo */}
-      <Route path="/register" element={<Navigate to="/register/duenos" replace />} />
+      <Route
+        path="/register"
+        element={<Navigate to="/register/duenos" replace />}
+      />
       <Route path="/onboarding/dueno" element={<OnboardingPage />} />
       <Route path="/dueno/pendiente" element={<PendientePage />} />
       {/* Demo: timeline de reservas del día (cronograma por mesa y hora) */}
@@ -48,10 +52,7 @@ export default function App() {
         <Route index element={<TimelineDemoPage />} />
       </Route>
       {/* Compat: la URL vieja /demo/reservas ahora redirige al dashboard */}
-      <Route
-        path="/demo/reservas"
-        element={<Navigate to="/dueno" replace />}
-      />
+      <Route path="/demo/reservas" element={<Navigate to="/dueno" replace />} />
 
       <Route
         path="/dueno"
@@ -104,6 +105,15 @@ export default function App() {
       </Route>
 
       <Route path="/" element={<Navigate to="/login-dueno" replace />} />
+
+      {/* Vista mobile-friendly para que el admin revise y apruebe/rechace
+          dueños desde el link firmado que manda el bot de Telegram. No
+          requiere login: la credencial es el token de la URL. */}
+      <Route
+        path="/admin/telegram/dueno/:token"
+        element={<TelegramReviewDuenoPage />}
+      />
+
       <Route path="*" element={<Navigate to="/login-dueno" replace />} />
     </Routes>
   );
