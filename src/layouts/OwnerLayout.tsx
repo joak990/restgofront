@@ -1,5 +1,11 @@
 // filepath: src/layouts/OwnerLayout.tsx
-import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useEffect, useState } from "react";
 import { authApi } from "../api/auth";
 import { duenosApi, type Restaurante } from "../api/duenos";
