@@ -1,6 +1,8 @@
 // filepath: src/pages/ReservasPage.tsx
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, type ReactNode } from "react";
 import { useParams } from "react-router-dom";
+import PhoneInput, { type Value } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 import {
   duenosApi,
   type Reserva,
@@ -474,9 +476,7 @@ export default function ReservasPage() {
                                     <span>
                                       {r.horaReserva} — {r.horaFin}
                                     </span>
-                                    <span>
-                                      {r.cantidadPersonas} personas
-                                    </span>
+                                    <span>{r.cantidadPersonas} personas</span>
                                     {r.mesa && (
                                       <span>
                                         {r.mesa.nombre ?? "Mesa sin nombre"}
@@ -798,136 +798,310 @@ export default function ReservasPage() {
 
       {/* === MODAL NUEVA RESERVA === */}
       {showNuevaReserva && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-stone-900">
-                  ➕ Nueva reserva
-                </h3>
-                <button
-                  onClick={() => setShowNuevaReserva(false)}
-                  className="text-stone-400 hover:text-stone-600 text-xl"
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => !nuevaReservaSaving && setShowNuevaReserva(false)}
+          />
+          <div className="relative card w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col shadow-xl">
+            {/* Header con gradiente forest */}
+            <div className="relative px-6 py-5 border-b border-cream-200 bg-gradient-to-br from-forest-700 via-forest-800 to-forest-900 text-white overflow-hidden">
+              <div
+                className="absolute -right-6 -top-6 w-48 h-48 opacity-10 select-none pointer-events-none"
+                aria-hidden
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.2}
+                  className="w-full h-full"
                 >
-                  ✕
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                  />
+                </svg>
+              </div>
+              <div className="relative flex items-start justify-between gap-3">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-cream-200/90 font-semibold mb-1">
+                    <span className="w-1.5 h-1.5 bg-cream-200 rounded-full" />
+                    Cargar nuevo
+                  </div>
+                  <h2 className="text-xl font-bold leading-tight">
+                    Nueva reserva
+                  </h2>
+                  <p className="text-sm text-cream-200/80 mt-0.5 flex items-center gap-2 flex-wrap">
+                    <span className="inline-flex items-center gap-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        className="w-3.5 h-3.5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                        />
+                      </svg>
+                      {formatearFecha(fechaCalendario)}
+                    </span>
+                    <span className="text-cream-200/50">·</span>
+                    <span>Reserva manual (teléfono / presencial)</span>
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowNuevaReserva(false)}
+                  className="text-cream-200/80 hover:text-white hover:bg-white/10 text-2xl leading-none w-9 h-9 flex items-center justify-center rounded-full transition"
+                  aria-label="Cerrar"
+                  disabled={nuevaReservaSaving}
+                >
+                  ×
                 </button>
               </div>
+            </div>
 
-              <p className="text-sm text-stone-500 mb-4">
-                📅 {formatearFecha(fechaCalendario)} — Reserva manual (teléfono
-                / presencial)
-              </p>
-
-              <form onSubmit={crearReservaManual} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-stone-600 mb-1">
-                      Hora <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="time"
-                      required
-                      value={nuevaReservaHora}
-                      onChange={(e) => setNuevaReservaHora(e.target.value)}
-                      className="input w-full"
-                    />
+            <form
+              onSubmit={crearReservaManual}
+              className="flex flex-col flex-1 min-h-0"
+            >
+              <div className="px-6 py-5 overflow-y-auto flex-1 space-y-5">
+                {/* SECCIÓN: Turno */}
+                <section>
+                  <SectionTitle icon="turno">Turno</SectionTitle>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-stone-700 mb-1">
+                        Hora <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="time"
+                        required
+                        value={nuevaReservaHora}
+                        onChange={(e) => setNuevaReservaHora(e.target.value)}
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-stone-700 mb-1">
+                        Personas <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        required
+                        min={1}
+                        max={50}
+                        value={nuevaReservaPersonas}
+                        onChange={(e) =>
+                          setNuevaReservaPersonas(Number(e.target.value))
+                        }
+                        className="input"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-stone-600 mb-1">
-                      Personas <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      min={1}
-                      max={50}
-                      value={nuevaReservaPersonas}
-                      onChange={(e) =>
-                        setNuevaReservaPersonas(Number(e.target.value))
-                      }
-                      className="input w-full"
-                    />
+                </section>
+
+                {/* SECCIÓN: Cliente */}
+                <section>
+                  <SectionTitle icon="cliente">Cliente</SectionTitle>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-stone-700 mb-1">
+                        Nombre
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ej: Juan Pérez"
+                        value={nuevaReservaNombre}
+                        onChange={(e) => setNuevaReservaNombre(e.target.value)}
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-stone-700 mb-1">
+                        Teléfono
+                      </label>
+                      <PhoneInput
+                        international
+                        defaultCountry="AR"
+                        value={(nuevaReservaTelefono as Value) || undefined}
+                        onChange={(value) =>
+                          setNuevaReservaTelefono(value ?? "")
+                        }
+                        placeholder="11 1234-5678"
+                        className="rg-phone-input"
+                      />
+                    </div>
                   </div>
-                </div>
+                </section>
 
-                <div>
-                  <label className="block text-xs font-medium text-stone-600 mb-1">
-                    Nombre del cliente
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Ej: Juan Pérez"
-                    value={nuevaReservaNombre}
-                    onChange={(e) => setNuevaReservaNombre(e.target.value)}
-                    className="input w-full"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-stone-600 mb-1">
-                    Teléfono
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="Ej: 11 1234-5678"
-                    value={nuevaReservaTelefono}
-                    onChange={(e) => setNuevaReservaTelefono(e.target.value)}
-                    className="input w-full"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-stone-600 mb-1">
-                    Mesa
-                  </label>
+                {/* SECCIÓN: Mesa */}
+                <section>
+                  <SectionTitle icon="mesa">Mesa</SectionTitle>
                   <select
                     value={nuevaReservaMesaId}
                     onChange={(e) => setNuevaReservaMesaId(e.target.value)}
-                    className="input w-full"
+                    className="input"
                   >
-                    <option value="">Automática</option>
+                    <option value="">Automática (el sistema asigna)</option>
                     {mesas.map((m) => (
                       <option key={m.id} value={m.id}>
                         {m.nombre ?? "Mesa"} — {m.capacidad} personas
                       </option>
                     ))}
                   </select>
-                </div>
+                </section>
 
-                <div>
-                  <label className="block text-xs font-medium text-stone-600 mb-1">
-                    Notas / Pedidos especiales
-                  </label>
-                  <textarea
-                    rows={2}
-                    placeholder="Alergias, preferencias, etc."
-                    value={nuevaReservaNotas}
-                    onChange={(e) => setNuevaReservaNotas(e.target.value)}
-                    className="input w-full resize-none"
-                  />
-                </div>
+                {/* SECCIÓN: Notas */}
+                <section>
+                  <SectionTitle icon="notas">Notas</SectionTitle>
+                  <div>
+                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                      Pedidos especiales
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Alergias, preferencias, etc."
+                      value={nuevaReservaNotas}
+                      onChange={(e) => setNuevaReservaNotas(e.target.value)}
+                      className="input resize-y"
+                    />
+                  </div>
+                </section>
+              </div>
 
-                <div className="flex gap-2 pt-2">
-                  <button
-                    type="submit"
-                    disabled={nuevaReservaSaving || !nuevaReservaHora}
-                    className="btn-primary flex-1 justify-center"
-                  >
-                    {nuevaReservaSaving ? "Creando..." : "✓ Crear reserva"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowNuevaReserva(false)}
-                    className="btn-ghost"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </form>
-            </div>
+              {/* Footer sticky */}
+              <div className="px-6 py-4 border-t border-cream-200 bg-cream-50/40 flex flex-wrap gap-2 justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowNuevaReserva(false)}
+                  className="btn-ghost"
+                  disabled={nuevaReservaSaving}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={nuevaReservaSaving || !nuevaReservaHora}
+                  className="btn-primary"
+                >
+                  {nuevaReservaSaving ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Creando…
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M4.5 12.75l6 6 9-13.5"
+                        />
+                      </svg>
+                      Crear reserva
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
     </div>
   );
+}
+
+/**
+ * Título de sección con barrita vertical verde (consistente con el
+ * modal de Crear restaurante / Mesas).
+ */
+function SectionTitle({
+  icon,
+  children,
+}: {
+  icon: "turno" | "cliente" | "mesa" | "notas";
+  children: ReactNode;
+}) {
+  return (
+    <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+      <span className="w-1 h-4 bg-forest-600 rounded-full" />
+      <span aria-hidden className="text-forest-600">
+        <SectionIcon kind={icon} />
+      </span>
+      <span>{children}</span>
+    </h3>
+  );
+}
+
+function SectionIcon({
+  kind,
+}: {
+  kind: "turno" | "cliente" | "mesa" | "notas";
+}) {
+  const className = "w-4 h-4";
+  const common = {
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none" as const,
+    viewBox: "0 0 24 24",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    className,
+  };
+  switch (kind) {
+    case "turno":
+      return (
+        <svg {...common}>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+          />
+        </svg>
+      );
+    case "cliente":
+      return (
+        <svg {...common}>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+          />
+        </svg>
+      );
+    case "mesa":
+      return (
+        <svg {...common}>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3 8.25a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 8.25v7.5A2.25 2.25 0 0 1 18.75 18H5.25A2.25 2.25 0 0 1 3 15.75v-7.5ZM3 12h18"
+          />
+        </svg>
+      );
+    case "notas":
+      return (
+        <svg {...common}>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M16.862 4.487 18.549 2.799a2.121 2.121 0 1 1 3 3L18.549 9.799a2.25 2.25 0 0 1-1.897 1.131l-2.685.8.8-2.685a2.25 2.25 0 0 1 1.131-1.897ZM19.5 12.75V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V8.25A2.25 2.25 0 0 1 6.75 6h6.75"
+          />
+        </svg>
+      );
+  }
 }
