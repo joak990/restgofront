@@ -57,6 +57,68 @@ export interface ListDuenosParams {
 }
 
 // ---------------------------------------------------------------------------
+// Clientes
+// ---------------------------------------------------------------------------
+
+export type EstadoCliente = "ACTIVO" | "SUSPENDIDO" | "ELIMINADO";
+
+export interface ClienteDetalle {
+  id: string;
+  correo: string;
+  nombreCompleto: string;
+  telefono: string | null;
+  urlAvatar: string | null;
+  estadoCliente: EstadoCliente;
+  activo: boolean;
+  creadoEn: string;
+  provincia: { id: string; nombre: string } | null;
+  ciudad: { id: string; nombre: string } | null;
+  _count: { reservas: number; pagos: number };
+}
+
+export interface ListClientesResponse {
+  data: ClienteDetalle[];
+  meta: ListDuenosMeta;
+}
+
+export interface ListClientesParams {
+  estadoCliente?: EstadoCliente;
+  provinciaId?: string;
+  q?: string;
+  page?: number;
+  limit?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Restaurantes
+// ---------------------------------------------------------------------------
+
+export interface RestauranteEnGrupo {
+  id: string;
+  nombre: string;
+  tipoCocina: string | null;
+  rangoPrecio: number;
+  urlImagenPortada: string | null;
+  verificado: boolean;
+  activo: boolean;
+  ciudad: { nombre: string } | null;
+  dueno: {
+    id: string;
+    nombreCompleto: string;
+    correo: string;
+    estadoVerificacion: string;
+  };
+  _count: { platos: number; mesas: number };
+}
+
+export interface RestauranteGrupoPorProvincia {
+  provinciaId: string;
+  provinciaNombre: string;
+  total: number;
+  restaurantes: RestauranteEnGrupo[];
+}
+
+// ---------------------------------------------------------------------------
 // Endpoints
 // ---------------------------------------------------------------------------
 
@@ -100,6 +162,34 @@ export const adminApi = {
     const { data } = await apiClient.patch<DuenoDetalle>(
       `/admin/duenos/${id}/rechazar`,
       { motivo },
+    );
+    return data;
+  },
+
+  /**
+   * Listar todos los clientes (admin).
+   * GET /admin/clientes?estadoCliente=...&provinciaId=...&q=...&page=...&limit=...
+   */
+  async listClientes(
+    params: ListClientesParams = {},
+  ): Promise<ListClientesResponse> {
+    const { data } = await apiClient.get<ListClientesResponse>(
+      "/admin/clientes",
+      { params },
+    );
+    return data;
+  },
+
+  /**
+   * Listar todos los restaurantes activos, agrupados por provincia.
+   * GET /admin/restaurantes?provinciaId=...
+   */
+  async listRestaurantes(
+    params: { provinciaId?: string } = {},
+  ): Promise<RestauranteGrupoPorProvincia[]> {
+    const { data } = await apiClient.get<RestauranteGrupoPorProvincia[]>(
+      "/admin/restaurantes",
+      { params },
     );
     return data;
   },

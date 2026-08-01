@@ -19,6 +19,8 @@ import TimelineDemoPage from "./pages/TimelineDemoPage";
 import OwnerLayout from "./layouts/OwnerLayout";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminPendientesPage from "./pages/AdminPendientesPage";
+import AdminClientesPage from "./pages/AdminClientesPage";
+import AdminRestaurantesPage from "./pages/AdminRestaurantesPage";
 import RequireDuenoVerificado from "./components/RequireDuenoVerificado";
 import RequireAdmin from "./components/RequireAdmin";
 
@@ -95,6 +97,8 @@ export default function App() {
         }
       >
         <Route index element={<AdminPendientesPage />} />
+        <Route path="clientes" element={<AdminClientesPage />} />
+        <Route path="restaurantes" element={<AdminRestaurantesPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/login-dueno" replace />} />
