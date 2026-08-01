@@ -2,8 +2,14 @@
 // Layout del panel de admin. Independiente del OwnerLayout porque el admin
 // no debe ver el navbar del dueño y debe tener una estética más sobria.
 
-import { Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { authApi } from "../api/auth";
+
+const SUBNAV: { to: string; label: string; end?: boolean }[] = [
+  { to: "/dueno-panel-adm-7x9z", label: "Pendientes", end: true },
+  { to: "/dueno-panel-adm-7x9z/clientes", label: "Clientes" },
+  { to: "/dueno-panel-adm-7x9z/restaurantes", label: "Restaurantes" },
+];
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -19,9 +25,6 @@ export default function AdminLayout() {
       <header className="bg-stone-900 text-white shadow-sm border-b border-stone-700">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-stone-700 text-amber-300 shadow-sm">
-              <span className="text-lg">🛡️</span>
-            </span>
             <div>
               <h1 className="font-bold text-white leading-tight">
                 RestaurantGo · Admin
@@ -52,6 +55,24 @@ export default function AdminLayout() {
             </button>
           </div>
         </div>
+        <nav className="max-w-6xl mx-auto px-4 sm:px-6 pb-2 -mt-1 flex items-center gap-1 text-sm">
+          {SUBNAV.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) =>
+                `px-3 py-1.5 rounded-md font-medium transition ${
+                  isActive
+                    ? "bg-stone-700 text-white"
+                    : "text-stone-300 hover:bg-stone-800 hover:text-white"
+                }`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
       </header>
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
         <Outlet />
