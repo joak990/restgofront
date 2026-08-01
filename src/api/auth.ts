@@ -27,7 +27,8 @@ export function rutaPorTipo(user: LoginResponse | null): string {
     case "EMPLEADO":
       return `/staff/${user.restauranteId ?? ""}`;
     case "ADMIN":
-      return "/admin";
+      // URL ofuscada para que no sea accesible sin saberla.
+      return "/dueno-panel-adm-7x9z";
     case "CLIENTE":
     default:
       return "/login";
