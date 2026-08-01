@@ -22,34 +22,37 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="bg-stone-900 text-white shadow-sm border-b border-stone-700">
+    <div className="min-h-screen bg-gradient-to-b from-cream-50 to-cream-100">
+      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-cream-200 sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 group">
+            <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-forest-600 to-forest-800 text-cream-50 shadow-sm group-hover:scale-105 transition-transform">
+              <span className="text-lg">🛡️</span>
+            </span>
             <div>
-              <h1 className="font-bold text-white leading-tight">
+              <h1 className="font-bold text-stone-900 leading-tight">
                 RestaurantGo · Admin
               </h1>
-              <p className="text-xs text-stone-400 leading-tight">
+              <p className="text-xs text-stone-500 leading-tight">
                 Panel de moderación
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3 text-sm">
             <div className="hidden sm:flex flex-col items-end">
-              <span className="font-medium text-white">
+              <span className="font-medium text-stone-800">
                 {user?.nombreCompleto ?? ""}
               </span>
-              <span className="text-xs text-amber-300">
+              <span className="text-xs text-forest-600 font-medium">
                 {user?.rolAdmin ?? "ADMIN"}
               </span>
             </div>
-            <div className="w-9 h-9 rounded-full bg-stone-700 flex items-center justify-center text-amber-300 font-medium shadow-sm">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-forest-500 to-forest-700 flex items-center justify-center text-cream-50 font-medium shadow-sm">
               {user?.nombreCompleto?.charAt(0).toUpperCase() ?? "A"}
             </div>
             <button
               onClick={handleLogout}
-              className="text-sm px-3 py-1.5 rounded border border-stone-600 hover:bg-stone-800 transition"
+              className="btn-ghost text-sm py-1.5 px-3"
               title="Cerrar sesión"
             >
               Salir
@@ -65,8 +68,8 @@ export default function AdminLayout() {
               className={({ isActive }) =>
                 `px-3 py-1.5 rounded-md font-medium transition ${
                   isActive
-                    ? "bg-stone-700 text-white"
-                    : "text-stone-300 hover:bg-stone-800 hover:text-white"
+                    ? "bg-forest-100 text-forest-800"
+                    : "text-stone-600 hover:bg-cream-100 hover:text-stone-800"
                 }`
               }
             >

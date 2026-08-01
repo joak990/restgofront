@@ -16,7 +16,7 @@ const ESTADOS: { valor: EstadoCliente | "TODOS"; label: string }[] = [
 ];
 
 const PILL: Record<EstadoCliente, string> = {
-  ACTIVO: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  ACTIVO: "bg-forest-100 text-forest-800 border-forest-200",
   SUSPENDIDO: "bg-amber-100 text-amber-800 border-amber-200",
   ELIMINADO: "bg-red-100 text-red-800 border-red-200",
 };
@@ -33,8 +33,7 @@ export default function AdminClientesPage() {
   function cargar() {
     setCargando(true);
     setError(null);
-    const filtro =
-      estadoFiltro === "TODOS" ? undefined : estadoFiltro;
+    const filtro = estadoFiltro === "TODOS" ? undefined : estadoFiltro;
     adminApi
       .listClientes({ estadoCliente: filtro, limit: 100 })
       .then((resp) => setData(resp.data))
@@ -62,7 +61,9 @@ export default function AdminClientesPage() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h2 className="text-xl font-semibold text-stone-900">Clientes</h2>
         <span className="text-sm text-stone-500">
-          {cargando ? "Cargando..." : `${filtrados.length} resultado${filtrados.length === 1 ? "" : "s"}`}
+          {cargando
+            ? "Cargando..."
+            : `${filtrados.length} resultado${filtrados.length === 1 ? "" : "s"}`}
         </span>
       </div>
 
@@ -73,8 +74,8 @@ export default function AdminClientesPage() {
             onClick={() => setEstadoFiltro(e.valor)}
             className={`text-xs px-3 py-1.5 rounded-full border transition ${
               estadoFiltro === e.valor
-                ? "bg-stone-900 text-white border-stone-900"
-                : "bg-white text-stone-700 border-stone-200 hover:bg-stone-100"
+                ? "bg-forest-600 text-cream-50 border-forest-600 shadow-sm"
+                : "bg-white text-stone-700 border-stone-200 hover:bg-cream-100 hover:border-stone-300"
             }`}
           >
             {e.label}
@@ -104,7 +105,7 @@ export default function AdminClientesPage() {
           Cargando clientes…
         </div>
       ) : filtrados.length === 0 ? (
-        <div className="card p-8 text-center bg-stone-100 border-dashed">
+        <div className="card p-8 text-center bg-cream-50/40 border-dashed border-cream-300">
           <div className="text-4xl mb-2">📭</div>
           <p className="text-stone-700 font-medium">Sin clientes</p>
           <p className="text-xs text-stone-500 mt-1">
@@ -112,9 +113,9 @@ export default function AdminClientesPage() {
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
+        <div className="overflow-hidden rounded-xl border border-cream-200 bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="bg-stone-100 text-left text-stone-700">
+            <thead className="bg-cream-50 text-left text-stone-700">
               <tr>
                 <th className="px-4 py-3 font-semibold">Cliente</th>
                 <th className="px-4 py-3 font-semibold hidden md:table-cell">
@@ -127,12 +128,12 @@ export default function AdminClientesPage() {
                 <th className="px-4 py-3 font-semibold">Estado</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-cream-100">
               {filtrados.map((c) => (
-                <tr key={c.id} className="hover:bg-stone-50 transition">
+                <tr key={c.id} className="hover:bg-cream-50/60 transition">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-stone-100 overflow-hidden shrink-0 flex items-center justify-center">
+                      <div className="w-9 h-9 rounded-full bg-cream-100 overflow-hidden shrink-0 flex items-center justify-center">
                         {c.urlAvatar ? (
                           <img
                             src={c.urlAvatar}

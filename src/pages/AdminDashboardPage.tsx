@@ -54,6 +54,7 @@ export default function AdminDashboardPage() {
   } | null>(null);
   const [restaurantes, setRestaurantes] = useState<PuntoSerie[]>([]);
   const [reservas, setReservas] = useState<PuntoSerie[]>([]);
+  const [reservasTurno, setReservasTurno] = useState<PuntoSerie[]>([]);
   const [rango, setRango] = useState<Rango>("30d");
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -75,15 +76,21 @@ export default function AdminDashboardPage() {
       adminApi.getReservasDashboard({
         desde,
         hasta,
-        granularidad: rango === "7d" ? "dia" : "dia",
+        granularidad: "dia",
+      }),
+      adminApi.getReservasPorTurno({
+        desde,
+        hasta,
+        granularidad: "dia",
       }),
     ])
-      .then(([r, d, u, rn, rs]) => {
+      .then(([r, d, u, rn, rs, rt]) => {
         setResumen(r);
         setDuenosEstado(d);
         setUsuarios(u);
         setRestaurantes(rn);
         setReservas(rs);
+        setReservasTurno(rt);
       })
       .catch((e) => setError((e as Error).message))
       .finally(() => setCargando(false));
@@ -105,8 +112,8 @@ export default function AdminDashboardPage() {
               onClick={() => setRango(r)}
               className={`text-xs px-3 py-1.5 rounded-full border transition ${
                 rango === r
-                  ? "bg-stone-900 text-white border-stone-900"
-                  : "bg-white text-stone-700 border-stone-200 hover:bg-stone-100"
+                  ? "bg-forest-600 text-cream-50 border-forest-600 shadow-sm"
+                  : "bg-white text-stone-700 border-stone-200 hover:bg-cream-100 hover:border-stone-300"
               }`}
             >
               {RANGO_LABEL[r]}
@@ -114,7 +121,7 @@ export default function AdminDashboardPage() {
           ))}
           <button
             onClick={cargar}
-            className="text-xs px-3 py-1.5 rounded-full border bg-white text-stone-700 border-stone-200 hover:bg-stone-100"
+            className="text-xs px-3 py-1.5 rounded-full border bg-white text-stone-700 border-stone-200 hover:bg-cream-100 hover:border-stone-300"
             title="Refrescar"
           >
             Refrescar
@@ -195,8 +202,15 @@ export default function AdminDashboardPage() {
               tipo="line"
             />
             <ChartCard
-              title="Reservas"
-              subtitle="Reservas creadas por día"
+              title="Reservas por día de turno"
+              subtitle="Cuándo se va a sentar el cliente"
+              data={reservasTurno}
+              tipo="area"
+              serieName="Reservas"
+            />
+            <ChartCard
+              title="Reservas creadas por día"
+              subtitle="Cuándo se hizo la reserva"
               data={reservas}
               tipo="area"
               serieName="Reservas"
@@ -312,7 +326,8 @@ function ChartCard({
 
     const tsToValue = (rows: PuntoSerie[]) =>
       rows.map((p) => ({
-        time: p.fecha as unknown as UTCTimestamp,
+        // 'YYYY-MM-DD' → epoch seconds (lightweight-charts requiere number).
+        time: Math.floor(Date.parse(p.fecha) / 1000) as UTCTimestamp,
         value: p.valor,
       }));
 
@@ -387,11 +402,7 @@ function ChartCard({
   );
 }
 
-function DistribucionCard({
-  estado,
-}: {
-  estado: DuenosPorEstado | null;
-}) {
+function DistribucionCard({ estado }: { estado: DuenosPorEstado | null }) {
   if (!estado) {
     return (
       <div className="card p-4">
@@ -416,7 +427,7 @@ function DistribucionCard({
     {
       label: "Verificados",
       value: estado.VERIFICADO,
-      color: "bg-emerald-500",
+      color: "bg-forest-600",
     },
     { label: "Rechazados", value: estado.RECHAZADO, color: "bg-red-500" },
   ];
@@ -426,9 +437,7 @@ function DistribucionCard({
       <h3 className="text-sm font-semibold text-stone-900">
         Distribución de dueños
       </h3>
-      <p className="text-xs text-stone-500 mb-3">
-        {total} dueños en total
-      </p>
+      <p className="text-xs text-stone-500 mb-3">{total} dueños en total</p>
       <div className="space-y-2">
         {items.map((it) => {
           const pct = total > 0 ? (it.value / total) * 100 : 0;
