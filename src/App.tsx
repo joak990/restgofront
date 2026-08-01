@@ -17,7 +17,10 @@ import PerfilPage from "./pages/PerfilPage";
 import VistaMesaPage from "./pages/VistaMesaPage";
 import TimelineDemoPage from "./pages/TimelineDemoPage";
 import OwnerLayout from "./layouts/OwnerLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import AdminPendientesPage from "./pages/AdminPendientesPage";
 import RequireDuenoVerificado from "./components/RequireDuenoVerificado";
+import RequireAdmin from "./components/RequireAdmin";
 
 export default function App() {
   return (
@@ -62,10 +65,6 @@ export default function App() {
           <Route index element={<RestauranteInfoPage />} />
           <Route path="clientes" element={<ClientesPage />} />
         </Route>
-        <Route path="restaurantes/:id" element={<RestauranteDetallePage />}>
-          <Route index element={<RestauranteInfoPage />} />
-          <Route path="clientes" element={<ClientesPage />} />
-        </Route>
         <Route path="restaurantes/:id/horarios" element={<HorariosPage />} />
         <Route path="restaurantes/:id/mesas" element={<MesasPage />} />
         <Route path="restaurantes/:id/carta" element={<CartaPage />} />
@@ -84,6 +83,18 @@ export default function App() {
         }
       >
         <Route index element={<ClientesPage />} />
+      </Route>
+
+      {/* Panel de admin — ruta oculta para no quedar visible en el navbar */}
+      <Route
+        path="/dueno-panel-adm-7x9z"
+        element={
+          <RequireAdmin>
+            <AdminLayout />
+          </RequireAdmin>
+        }
+      >
+        <Route index element={<AdminPendientesPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/login-dueno" replace />} />
