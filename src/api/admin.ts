@@ -119,6 +119,50 @@ export interface RestauranteGrupoPorProvincia {
 }
 
 // ---------------------------------------------------------------------------
+// Dashboard
+// ---------------------------------------------------------------------------
+
+export interface PuntoSerie {
+  fecha: string; // YYYY-MM-DD
+  valor: number;
+}
+
+export interface DashboardResumen {
+  generadoEn: string;
+  totales: {
+    duenos: number;
+    duenosVerificados: number;
+    duenosPendientes: number;
+    clientes: number;
+    restaurantes: number;
+    restaurantesVerificados: number;
+    platos: number;
+    reservas: number;
+    pagos: number;
+    ingresosTotalesCentavos: number;
+  };
+  hoy: {
+    duenosNuevos: number;
+    clientesNuevos: number;
+    restaurantesNuevos: number;
+    reservas: number;
+  };
+  ultimos7Dias: {
+    duenosNuevos: number;
+    clientesNuevos: number;
+    restaurantesNuevos: number;
+    reservas: number;
+  };
+}
+
+export interface DuenosPorEstado {
+  PENDIENTE: number;
+  EN_REVISION: number;
+  VERIFICADO: number;
+  RECHAZADO: number;
+}
+
+// ---------------------------------------------------------------------------
 // Endpoints
 // ---------------------------------------------------------------------------
 
@@ -189,6 +233,78 @@ export const adminApi = {
   ): Promise<RestauranteGrupoPorProvincia[]> {
     const { data } = await apiClient.get<RestauranteGrupoPorProvincia[]>(
       "/admin/restaurantes",
+      { params },
+    );
+    return data;
+  },
+
+  // -------------------------------------------------------------------------
+  // Dashboard
+  // -------------------------------------------------------------------------
+
+  /**
+   * Resumen ejecutivo de métricas.
+   * GET /admin/dashboard/resumen
+   */
+  async getDashboardResumen(): Promise<DashboardResumen> {
+    const { data } = await apiClient.get<DashboardResumen>(
+      "/admin/dashboard/resumen",
+    );
+    return data;
+  },
+
+  /**
+   * Distribución de dueños por estado de verificación.
+   * GET /admin/dashboard/duenos-por-estado
+   */
+  async getDuenosPorEstado(): Promise<DuenosPorEstado> {
+    const { data } = await apiClient.get<DuenosPorEstado>(
+      "/admin/dashboard/duenos-por-estado",
+    );
+    return data;
+  },
+
+  /**
+   * Series de tiempo de registros de usuarios.
+   * GET /admin/dashboard/usuarios-nuevos?desde=...&hasta=...
+   */
+  async getUsuariosNuevos(
+    params: { desde?: string; hasta?: string } = {},
+  ): Promise<{ duenos: PuntoSerie[]; clientes: PuntoSerie[] }> {
+    const { data } = await apiClient.get<{
+      duenos: PuntoSerie[];
+      clientes: PuntoSerie[];
+    }>("/admin/dashboard/usuarios-nuevos", { params });
+    return data;
+  },
+
+  /**
+   * Serie de tiempo de restaurantes nuevos.
+   * GET /admin/dashboard/restaurantes-nuevos?desde=...&hasta=...
+   */
+  async getRestaurantesNuevos(
+    params: { desde?: string; hasta?: string } = {},
+  ): Promise<PuntoSerie[]> {
+    const { data } = await apiClient.get<PuntoSerie[]>(
+      "/admin/dashboard/restaurantes-nuevos",
+      { params },
+    );
+    return data;
+  },
+
+  /**
+   * Serie de tiempo de reservas.
+   * GET /admin/dashboard/reservas?desde=...&hasta=...&granularidad=dia|semana|mes
+   */
+  async getReservasDashboard(
+    params: {
+      desde?: string;
+      hasta?: string;
+      granularidad?: "dia" | "semana" | "mes";
+    } = {},
+  ): Promise<PuntoSerie[]> {
+    const { data } = await apiClient.get<PuntoSerie[]>(
+      "/admin/dashboard/reservas",
       { params },
     );
     return data;

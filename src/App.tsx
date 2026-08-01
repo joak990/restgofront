@@ -21,6 +21,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import AdminPendientesPage from "./pages/AdminPendientesPage";
 import AdminClientesPage from "./pages/AdminClientesPage";
 import AdminRestaurantesPage from "./pages/AdminRestaurantesPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 import RequireDuenoVerificado from "./components/RequireDuenoVerificado";
 import RequireAdmin from "./components/RequireAdmin";
 
@@ -97,6 +98,7 @@ export default function App() {
         }
       >
         <Route index element={<AdminPendientesPage />} />
+        <Route path="dashboard" element={<AdminDashboardPage />} />
         <Route path="clientes" element={<AdminClientesPage />} />
         <Route path="restaurantes" element={<AdminRestaurantesPage />} />
       </Route>
