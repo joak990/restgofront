@@ -10,10 +10,7 @@ import { apiClient } from "./client";
 // ---------------------------------------------------------------------------
 
 export type EstadoVerificacion =
-  | "PENDIENTE"
-  | "EN_REVISION"
-  | "VERIFICADO"
-  | "RECHAZADO";
+  "PENDIENTE" | "EN_REVISION" | "VERIFICADO" | "RECHAZADO";
 
 export interface DuenoDetalle {
   id: string;
@@ -293,7 +290,7 @@ export const adminApi = {
   },
 
   /**
-   * Serie de tiempo de reservas.
+   * Serie de tiempo de reservas (por fecha de creación).
    * GET /admin/dashboard/reservas?desde=...&hasta=...&granularidad=dia|semana|mes
    */
   async getReservasDashboard(
@@ -305,6 +302,24 @@ export const adminApi = {
   ): Promise<PuntoSerie[]> {
     const { data } = await apiClient.get<PuntoSerie[]>(
       "/admin/dashboard/reservas",
+      { params },
+    );
+    return data;
+  },
+
+  /**
+   * Serie de tiempo de reservas por FECHA DEL TURNO (cuándo se va a sentar el cliente).
+   * GET /admin/dashboard/reservas-turno?desde=...&hasta=...&granularidad=...
+   */
+  async getReservasPorTurno(
+    params: {
+      desde?: string;
+      hasta?: string;
+      granularidad?: "dia" | "semana" | "mes";
+    } = {},
+  ): Promise<PuntoSerie[]> {
+    const { data } = await apiClient.get<PuntoSerie[]>(
+      "/admin/dashboard/reservas-turno",
       { params },
     );
     return data;
