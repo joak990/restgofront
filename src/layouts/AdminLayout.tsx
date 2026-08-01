@@ -6,6 +6,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { authApi } from "../api/auth";
 
 const SUBNAV: { to: string; label: string; end?: boolean }[] = [
+  { to: "/dueno-panel-adm-7x9z/dashboard", label: "Dashboard" },
   { to: "/dueno-panel-adm-7x9z", label: "Pendientes", end: true },
   { to: "/dueno-panel-adm-7x9z/clientes", label: "Clientes" },
   { to: "/dueno-panel-adm-7x9z/restaurantes", label: "Restaurantes" },
