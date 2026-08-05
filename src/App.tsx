@@ -7,6 +7,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import PendientePage from "./pages/PendientePage";
 import MisRestaurantesPage from "./pages/MisRestaurantesPage";
 import RestauranteDetallePage from "./pages/RestauranteDetallePage";
+import RestauranteFotosPage from "./pages/RestauranteFotosPage";
 import RestauranteInfoPage from "./components/RestauranteInfoPage";
 import HorariosPage from "./pages/HorariosPage";
 import MesasPage from "./pages/MesasPage";
@@ -67,8 +68,7 @@ export default function App() {
         <Route path="carta" element={<CartaPage />} />
         <Route path="restaurantes/:id" element={<RestauranteDetallePage />}>
           <Route index element={<RestauranteInfoPage />} />
-          <Route path="clientes" element={<ClientesPage />} />
-        </Route>
+          <Route path="clientes" element={<ClientesPage />} />          <Route path="fotos" element={<RestauranteFotosPage />} />        </Route>
         <Route path="restaurantes/:id/horarios" element={<HorariosPage />} />
         <Route path="restaurantes/:id/mesas" element={<MesasPage />} />
         <Route path="restaurantes/:id/carta" element={<CartaPage />} />
