@@ -9,6 +9,7 @@ const tabs = [
   { to: 'mesas', label: 'Mesas' },
   { to: 'reservas', label: 'Reservas' },
   { to: 'clientes', label: 'Clientes' },
+  { to: 'fotos', label: 'Fotos' },
 ];
 
 export default function RestauranteDetallePage() {
