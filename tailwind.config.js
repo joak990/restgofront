@@ -35,4 +35,10 @@ export default {
     },
   },
   plugins: [],
+  safelist: [
+    {
+      pattern: /scrollbar/,
+      variants: ['hide'],
+    },
+  ],
 };
