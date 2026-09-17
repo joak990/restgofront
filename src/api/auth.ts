@@ -151,7 +151,7 @@ export const authApi = {
   },
 
   /**
-   * Cierra sesión en el back (best-effort) y limpia localStorage.
+   * Cierra sesión en el back (cookie httpOnly) y limpia localStorage.
    * También desloguea de Firebase para no reutilizar la sesión.
    */
   async logout(): Promise<void> {
@@ -162,7 +162,7 @@ export const authApi = {
     } catch {
       /* ignore */
     }
-    auth.clear();
+    await auth.clear();
   },
 
   currentUser<T = LoginResponse>(): T | null {

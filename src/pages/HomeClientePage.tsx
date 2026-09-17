@@ -1,13 +1,15 @@
 // filepath: src/pages/HomeClientePage.tsx
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   getProvincias,
   getCiudades,
   getRestaurantesByCiudad,
   type Provincia,
+  type Ciudad,
   type Restaurante,
 } from "../api/restaurantes";
+import { authApi } from "../api/auth";
 
 // ─── Mock data (reemplazará con datos reales del backend) ────────────────
 const CATEGORIES = [
@@ -56,11 +58,27 @@ const OFERTAS_HOT = [
 
 export default function HomeClientePage() {
   const navigate = useNavigate();
-  const [_provincias, setProvincias] = useState<Provincia[]>([]);
-  const [ubicacionLabel] = useState("Buenos Aires");
+  const [provincias, setProvincias] = useState<Provincia[]>([]);
+  const [ciudades, setCiudades] = useState<Ciudad[]>([]);
+  const [selectedCiudad, setSelectedCiudad] = useState<Ciudad | null>(null);
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [loadingProvincias, setLoadingProvincias] = useState(false);
+  const [loadingCiudades, setLoadingCiudades] = useState(false);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
   const [loadingRest, setLoadingRest] = useState(false);
   const [emptyRest, setEmptyRest] = useState(false);
+
+  const isLoggedIn = !!localStorage.getItem("restaurantgo_token");
+
+  const handleLogout = async () => {
+    await authApi.logout();
+    localStorage.removeItem("restaurantgo_token");
+    setShowUserDropdown(false);
+    navigate("/login");
+  };
 
   const loadRestaurantes = useCallback(async (ciudadId: string) => {
     setLoadingRest(true);
@@ -77,27 +95,53 @@ export default function HomeClientePage() {
     }
   }, []);
 
-  const loadRestaurantesForProvincia = useCallback(async (p: Provincia) => {
-    try {
-      const ciudades = await getCiudades(p.id);
-      if (ciudades.length > 0) await loadRestaurantes(ciudades[0].id);
-    } catch {}
-  }, [loadRestaurantes]);
-
+  // Load provinces on mount
   useEffect(() => {
     let mounted = true;
-    (async () => {
-      try {
-        const ps = await getProvincias();
+    setLoadingProvincias(true);
+    getProvincias()
+      .then((ps) => {
         if (!mounted) return;
         setProvincias(ps);
-        if (ps.length > 0) await loadRestaurantesForProvincia(ps[0]);
-      } catch {}
-    })();
+        // Auto-select Buenos Aires (provincia con nombre que contenga "Buenos Aires")
+        const bsas = ps.find((p) =>
+          p.nombre.toLowerCase().includes("buenos aires")
+        );
+        return bsas || ps[0];
+      })
+      .then((provincia) => {
+        if (!provincia) return;
+        return getCiudades(provincia.id);
+      })
+      .then((cs) => {
+        if (!mounted || !cs || cs.length === 0) return;
+        setCiudades(cs);
+        const primera = cs[0];
+        setSelectedCiudad(primera);
+        loadRestaurantes(primera.id);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (mounted) setLoadingProvincias(false);
+      });
     return () => {
       mounted = false;
     };
-  }, [loadRestaurantesForProvincia]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowLocationDropdown(false);
+      }
+      if (userDropdownRef.current && !userDropdownRef.current.contains(e.target as Node)) {
+        setShowUserDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   function handleRestauranteClick(id: string) {
     navigate(`/restaurante/${id}`);
@@ -108,12 +152,94 @@ export default function HomeClientePage() {
       {/* ─── Header ──────────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 bg-white border-b border-cream-200 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          {/* Ubicación */}
-          <button className="flex items-center gap-1.5 text-stone-600 hover:text-forest-600 transition-colors">
-            <span className="w-2 h-2 rounded-full bg-forest-500" />
-            <span className="text-sm font-medium">{ubicacionLabel}</span>
-            <span className="text-stone-400 text-xs">⌄</span>
-          </button>
+          {/* Ubicación con dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setShowLocationDropdown((v) => !v)}
+              className="flex items-center gap-1.5 text-stone-600 hover:text-forest-600 transition-colors"
+            >
+              <span className="w-2 h-2 rounded-full bg-forest-500" />
+              <span className="text-sm font-medium">
+                {selectedCiudad?.nombre || "Seleccionar ciudad"}
+              </span>
+              <span className="text-stone-400 text-xs">⌄</span>
+            </button>
+
+            {showLocationDropdown && (
+              <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-cream-200 z-50 overflow-hidden">
+                <div className="p-3 border-b border-cream-100">
+                  <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide">
+                    Provincia
+                  </p>
+                </div>
+                {loadingProvincias ? (
+                  <div className="flex justify-center py-4">
+                    <div className="w-5 h-5 border-2 border-forest-600 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : (
+                  <div className="max-h-48 overflow-y-auto">
+                    {provincias.map((prov) => (
+                      <div key={prov.id}>
+                        <button
+                          className="w-full text-left px-4 py-2.5 text-sm font-medium text-stone-700 hover:bg-cream-50 transition-colors"
+                          onClick={async () => {
+                            setLoadingCiudades(true);
+                            try {
+                              const cs = await getCiudades(prov.id);
+                              setCiudades(cs);
+                              if (cs.length > 0) {
+                                setSelectedCiudad(cs[0]);
+                                loadRestaurantes(cs[0].id);
+                              }
+                            } finally {
+                              setLoadingCiudades(false);
+                            }
+                          }}
+                        >
+                          {prov.nombre}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {ciudades.length > 0 && (
+                  <>
+                    <div className="p-3 border-t border-cream-100">
+                      <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide">
+                        Ciudad
+                      </p>
+                    </div>
+                    {loadingCiudades ? (
+                      <div className="flex justify-center py-4">
+                        <div className="w-5 h-5 border-2 border-forest-600 border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    ) : (
+                      <div className="max-h-48 overflow-y-auto pb-2">
+                        {ciudades.map((city) => (
+                          <button
+                            key={city.id}
+                            className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                              selectedCiudad?.id === city.id
+                                ? "bg-forest-50 text-forest-700 font-semibold"
+                                : "text-stone-600 hover:bg-cream-50"
+                            }`}
+                            onClick={() => {
+                              setSelectedCiudad(city);
+                              loadRestaurantes(city.id);
+                              setShowLocationDropdown(false);
+                            }}
+                          >
+                            {city.nombre}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Acciones */}
           <div className="flex items-center gap-3">
@@ -123,12 +249,54 @@ export default function HomeClientePage() {
                 2
               </span>
             </button>
-            <Link
-              to="/cliente/perfil"
-              className="w-9 h-9 rounded-full bg-forest-100 flex items-center justify-center text-lg hover:bg-forest-200 transition-colors"
-            >
-              👤
-            </Link>
+            {/* User dropdown */}
+            <div className="relative" ref={userDropdownRef}>
+              <button
+                onClick={() => setShowUserDropdown((v) => !v)}
+                className="w-9 h-9 rounded-full bg-forest-100 flex items-center justify-center text-lg hover:bg-forest-200 transition-colors"
+              >
+                {isLoggedIn ? "👤" : "🔓"}
+              </button>
+
+              {showUserDropdown && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-xl border border-cream-200 z-50 overflow-hidden">
+                  {isLoggedIn ? (
+                    <>
+                      <Link
+                        to="/cliente/perfil"
+                        className="flex items-center gap-2 px-4 py-3 text-sm text-stone-700 hover:bg-cream-50 transition-colors"
+                        onClick={() => setShowUserDropdown(false)}
+                      >
+                        👤 Mi perfil
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-cream-50 transition-colors"
+                      >
+                        🚪 Salir
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        className="flex items-center gap-2 px-4 py-3 text-sm text-stone-700 hover:bg-cream-50 transition-colors"
+                        onClick={() => setShowUserDropdown(false)}
+                      >
+                        🔑 Iniciar sesión
+                      </Link>
+                      <Link
+                        to="/register/cliente"
+                        className="flex items-center gap-2 px-4 py-3 text-sm text-stone-700 hover:bg-cream-50 transition-colors"
+                        onClick={() => setShowUserDropdown(false)}
+                      >
+                        ✨ Crear cuenta
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
