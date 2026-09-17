@@ -73,10 +73,17 @@ apiClient.interceptors.response.use(
 );
 
 // Helpers de auth
+// El JWT se guarda en cookie httpOnly (backend). localStorage solo guarda datos de usuario.
 export const auth = {
   getToken: () => localStorage.getItem(TOKEN_KEY),
   setToken: (token: string) => localStorage.setItem(TOKEN_KEY, token),
-  clear: () => {
+  clear: async () => {
+    // Llama al backend para limpiar la cookie httpOnly
+    try {
+      await apiClient.post("/auth/logout");
+    } catch {
+      // ignorado - siempre limpiamos localStorage
+    }
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     verificationCache.clear();
