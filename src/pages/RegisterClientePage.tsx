@@ -9,12 +9,6 @@ import {
   type Ciudad,
 } from "../api/restaurantes";
 
-interface RegisterResponse {
-  accessToken?: string;
-  tipo?: string;
-  needsOnboarding?: boolean;
-}
-
 export default function RegisterClientePage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<"landing" | "form">("landing");

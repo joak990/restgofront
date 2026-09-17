@@ -55,7 +55,7 @@ export default function RegisterVerifyPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await authApi.verifyEmail({ email, codigo: codigoStr });
+      await authApi.verifyEmail({ email, codigo: codigoStr });
       navigate("/cliente", { replace: true });
     } catch (err: any) {
       const msg =

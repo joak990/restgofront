@@ -5,10 +5,7 @@ import {
   getProvincias,
   getCiudades,
   getRestaurantesByCiudad,
-  matchProvincia,
-  matchCiudad,
   type Provincia,
-  type Ciudad,
   type Restaurante,
 } from "../api/restaurantes";
 
@@ -59,8 +56,8 @@ const OFERTAS_HOT = [
 
 export default function HomeClientePage() {
   const navigate = useNavigate();
-  const [provincias, setProvincias] = useState<Provincia[]>([]);
-  const [ubicacionLabel, setUbicacionLabel] = useState("Buenos Aires");
+  const [_provincias, setProvincias] = useState<Provincia[]>([]);
+  const [ubicacionLabel] = useState("Buenos Aires");
   const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
   const [loadingRest, setLoadingRest] = useState(false);
   const [emptyRest, setEmptyRest] = useState(false);
