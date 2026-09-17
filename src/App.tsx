@@ -25,6 +25,9 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import RequireDuenoVerificado from "./components/RequireDuenoVerificado";
 import RequireAdmin from "./components/RequireAdmin";
 import TelegramReviewDuenoPage from "./pages/TelegramReviewDuenoPage";
+import HomeClientePage from "./pages/HomeClientePage";
+import RegisterClientePage from "./pages/RegisterClientePage";
+import RegisterVerifyPage from "./pages/RegisterVerifyPage";
 
 export default function App() {
   return (
@@ -33,6 +36,8 @@ export default function App() {
       <Route path="/login-dueno" element={<LoginDuenoPage />} />
       {/* Registro exclusivo para dueños de restaurante */}
       <Route path="/register/duenos" element={<RegisterPage />} />
+      {/* Registro para clientes */}
+      <Route path="/register/cliente" element={<RegisterClientePage />} />
       {/* Compat: redirige el path viejo al nuevo */}
       <Route
         path="/register"
@@ -105,6 +110,11 @@ export default function App() {
       </Route>
 
       <Route path="/" element={<Navigate to="/login-dueno" replace />} />
+
+      {/* Home para clientes */}
+      <Route path="/cliente" element={<HomeClientePage />} />
+      <Route path="/register/cliente" element={<RegisterClientePage />} />
+      <Route path="/register/verify" element={<RegisterVerifyPage />} />
 
       {/* Vista mobile-friendly para que el admin revise y apruebe/rechace
           dueños desde el link firmado que manda el bot de Telegram. No

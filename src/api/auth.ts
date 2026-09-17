@@ -30,6 +30,7 @@ export function rutaPorTipo(user: LoginResponse | null): string {
       // URL ofuscada para que no sea accesible sin saberla.
       return "/dueno-panel-adm-7x9z";
     case "CLIENTE":
+      return "/cliente";
     default:
       return "/login";
   }
@@ -58,6 +59,18 @@ export interface RegisterRequest {
   email: string;
   password: string;
   nombreCompleto: string;
+}
+
+export interface RegisterClienteRequest {
+  email: string;
+  password: string;
+  nombreCompleto: string;
+  ciudadId: string;
+}
+
+export interface VerifyEmailRequest {
+  email: string;
+  codigo: string;
 }
 
 export interface LoginRequest {
@@ -111,6 +124,30 @@ export const authApi = {
     auth.setToken(data.accessToken);
     auth.setUser(data);
     return data;
+  },
+
+  /**
+   * Registro de cliente con email/password.
+   * Envía código de verificación por email.
+   */
+  async registerCliente(data: RegisterClienteRequest): Promise<{ success: boolean; message: string }> {
+    const response = await apiClient.post<{ success: boolean; message: string }>(
+      "/auth/register-cliente",
+      data,
+    );
+    return response.data;
+  },
+
+  /**
+   * Verifica el código de email y devuelve JWT de sesión.
+   */
+  async verifyEmail(data: VerifyEmailRequest): Promise<LoginResponse> {
+    const response = await apiClient.post<LoginResponse>("/auth/verify-email", data);
+    if (response.data.accessToken) {
+      auth.setToken(response.data.accessToken);
+      auth.setUser(response.data);
+    }
+    return response.data;
   },
 
   /**
