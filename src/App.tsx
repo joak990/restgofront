@@ -109,7 +109,7 @@ export default function App() {
         <Route path="restaurantes" element={<AdminRestaurantesPage />} />
       </Route>
 
-      <Route path="/" element={<Navigate to="/login-dueno" replace />} />
+      <Route path="/" element={<Navigate to="/cliente" replace />} />
 
       {/* Home para clientes */}
       <Route path="/cliente" element={<HomeClientePage />} />
